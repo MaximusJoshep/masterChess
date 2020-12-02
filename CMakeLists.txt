@@ -33,6 +33,7 @@ if(ANDROID)
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+
   )
 else()
   add_executable(masterChess
@@ -40,6 +41,12 @@ else()
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    board.cpp
+    board.h
+    board.ui
+    box.h
+    box.cpp
+
   )
 endif()
 
