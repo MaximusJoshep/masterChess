@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <vector>
 #include <iostream>
+#include <piece.h>
 
 namespace Ui {
 class Board;
@@ -17,14 +18,15 @@ public:
     explicit Board(QWidget *parent = nullptr);
     Box& operator () (const unsigned& i,const unsigned& j);
     ~Board();
-     void draw();
+     void draw_boxes();
+     void draw_pieces();
 
 
 
 
 private:
     Ui::Board *ui;
-    std::vector<Box *> boxes;
+     Box* boxes[8][8];
 
 };
 

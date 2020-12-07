@@ -9,11 +9,13 @@
 class Box:public QPushButton
 {
 public:
-    Box(QWidget *parent = nullptr);
+    Box( const int& Row,const int& Column,QWidget *parent = nullptr);
     ~Box();
     void setColor(QColor color);
+    bool hasPiece{false};
     int row;
     int column;
+    QString color{"white"};
 private:
 
 };

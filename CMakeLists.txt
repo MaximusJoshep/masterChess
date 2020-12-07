@@ -46,6 +46,23 @@ else()
     board.ui
     box.h
     box.cpp
+    piece.h
+    piece.cpp
+    imgs/
+    imgs.qrc
+    horse.h
+    horse.cpp
+    pawn.cpp
+    pawn.h
+    tower.cpp
+    tower.h
+    bishop.cpp
+    bishop.h
+    queen.cpp
+    queen.h
+    king.h
+    king.cpp
+
 
   )
 endif()
