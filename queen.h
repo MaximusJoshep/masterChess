@@ -1,11 +1,11 @@
 #ifndef QUEEN_H
 #define QUEEN_H
-#include <box.h>
+#include<piece.h>
 
-class Queen:public Box
+class Queen:public Piece
 {
 public:
-    Queen(QString Color,const int& Row,const int& Column,QWidget *parent=nullptr);
+    Queen(QString Color,QWidget *parent=nullptr);
 };
 
 #endif // QUEEN_H

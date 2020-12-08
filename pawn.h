@@ -1,11 +1,11 @@
 #ifndef PAWN_H
 #define PAWN_H
-#include<box.h>
+#include<piece.h>
 
-class Pawn:public Box
+class Pawn:public Piece
 {
 public:
-    Pawn( QString Color,const int& Row,const int& Column,QWidget *parent=nullptr);
+    Pawn(QString Color,QWidget *parent=nullptr);
 };
 
 #endif // PAWN_H

@@ -1,11 +1,11 @@
 #ifndef TOWER_H
 #define TOWER_H
-#include<box.h>
+#include<piece.h>
 
-class Tower:public Box
+class Tower:public Piece
 {
 public:
-    Tower(QString Color,const int& Row,const int& Column,QWidget *parent=nullptr);
+    Tower(QString Color,QWidget *parent=nullptr);
 };
 
 #endif // TOWER_H

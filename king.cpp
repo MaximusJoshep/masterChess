@@ -1,17 +1,15 @@
 #include "king.h"
 
-King::King(QString Color,const int& Row,const int& Column,QWidget *parent):Box(Row,Column,parent)
+King::King(QString Color,QWidget *parent):Piece(parent)
 {
-    this->hasPiece=true;
      this->color=Color;
       if(Color.compare("white")==0)
       {
-          this->setIcon(QIcon("://imgs/king1.png"));
+          this->imagen = QPixmap("://imgs/king1.png");
       }
       else
       {
-          this->setIcon(QIcon("://imgs/king.png"));
+          this->imagen = QPixmap("://imgs/king.png");
       }
-      this->setIconSize(QSize(50,50));
 
 }

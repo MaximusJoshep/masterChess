@@ -1,11 +1,11 @@
 #ifndef KING_H
 #define KING_H
-#include<box.h>
+#include<piece.h>
 
-class King:public Box
+class King:public Piece
 {
 public:
-    King(QString Color,const int& Row,const int& Column,QWidget *parent=nullptr);
+    King(QString Color,QWidget *parent=nullptr);
 };
 
 #endif // KING_H
