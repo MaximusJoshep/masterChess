@@ -1,13 +1,15 @@
 #ifndef PIECE_H
 #define PIECE_H
-#include <QPushButton>
 
-class Piece : public QPushButton
+#include<QPainter>
+#include<QWidget>
+class Piece : public QWidget
 {
+  Q_OBJECT
 public:
-    Piece();
-    int color=0;
-
+  Piece(QWidget * parent = nullptr);
+  QString color;
+  QPixmap imagen;
 };
 
 #endif // PIECE_H

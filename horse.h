@@ -1,11 +1,11 @@
 #ifndef HORSE_H
 #define HORSE_H
-#include<box.h>
+#include<piece.h>
 
-class Horse:public Box
+class Horse:public Piece
 {
 public:
-    Horse(QString Color,const int& Row,const int& Column,QWidget *parent=nullptr);
+    Horse(QString Color,QWidget *parent=nullptr);
 };
 
 #endif // HORSE_H

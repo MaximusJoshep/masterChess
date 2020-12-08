@@ -1,12 +1,11 @@
 #ifndef BISHOP_H
 #define BISHOP_H
-#include <box.h>
+#include<piece.h>
 
-
-class Bishop:public Box
+class Bishop:public Piece
 {
 public:
-    Bishop(QString Color,const int& Row,const int& Column,QWidget *parent=nullptr);
+    Bishop(QString Color, QWidget *parent=nullptr);
 };
 
 #endif // BISHOP_H

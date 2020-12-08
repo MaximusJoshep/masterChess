@@ -1,16 +1,14 @@
 #include "tower.h"
 
-Tower::Tower(QString Color,const int& Row,const int& Column,QWidget *parent):Box(Row,Column,parent)
+Tower::Tower(QString Color,QWidget *parent):Piece(parent)
 {
-    this->hasPiece=true;
      this->color=Color;
       if(Color.compare("white")==0)
       {
-          this->setIcon(QIcon("://imgs/rook1.png"));
+          this->imagen = QPixmap("://imgs/rook1.png");
       }
       else
       {
-          this->setIcon(QIcon("://imgs/rook.png"));
+          this->imagen = QPixmap("://imgs/rook.png");
       }
-      this->setIconSize(QSize(50,50));
 }

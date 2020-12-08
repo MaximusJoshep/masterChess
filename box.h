@@ -5,21 +5,28 @@
 #include <QGraphicsRectItem>
 #include <QBrush>
 #include <QPushButton>
+#include <iostream>
+#include "piece.h"
 
 class Box:public QPushButton
 {
+  Q_OBJECT
 public:
-    Box( const int& Row,const int& Column,QWidget *parent = nullptr);
+    Box(const int& Row,const int& Column,QWidget *parent = nullptr);
     ~Box();
-    void setColor(QColor color);
-    bool hasPiece{false};
+
+    Piece * piece;
     int row;
     int column;
-    QString color{"white"};
+
+
+    void markBox();
+    //virtual void showPosibilities();
+
+public Q_SLOTS:
+    void boxClickHandler();
+
 private:
-
 };
-
-
 
 #endif // BOX_H
