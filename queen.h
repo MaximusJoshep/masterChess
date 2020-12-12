@@ -6,6 +6,7 @@ class Queen:public Piece
 {
 public:
     Queen(QString Color,QWidget *parent=nullptr);
+    std::string getPiece() override;
 };
 
 #endif // QUEEN_H

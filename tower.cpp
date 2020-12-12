@@ -1,5 +1,5 @@
 #include "tower.h"
-
+#include <iostream>
 Tower::Tower(QString Color,QWidget *parent):Piece(parent)
 {
      this->color=Color;
@@ -11,4 +11,9 @@ Tower::Tower(QString Color,QWidget *parent):Piece(parent)
       {
           this->imagen = QPixmap("://imgs/rook.png");
       }
+}
+
+std::string Tower::getPiece()
+{
+  return "tower";
 }

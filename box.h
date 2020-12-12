@@ -15,13 +15,14 @@ public:
     Box(const int& Row,const int& Column,QWidget *parent = nullptr);
     ~Box();
 
+    bool libre{false};
+
     Piece * piece;
     int row;
     int column;
 
-
+    void reloadColor();
     void markBox();
-    //virtual void showPosibilities();
 
 public Q_SLOTS:
     void boxClickHandler();

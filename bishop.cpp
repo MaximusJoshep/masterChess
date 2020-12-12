@@ -1,5 +1,6 @@
 #include "bishop.h"
-
+#include <iostream>
+#include <string>
 Bishop::Bishop(QString Color,QWidget *parent):Piece(parent)
 {
      this->color=Color;
@@ -12,3 +13,8 @@ Bishop::Bishop(QString Color,QWidget *parent):Piece(parent)
           this->imagen = QPixmap("://imgs/bishop.png");
       }
 }
+std::string Bishop::getPiece()
+{
+  return "bishop";
+}
+

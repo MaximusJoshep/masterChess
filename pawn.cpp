@@ -1,5 +1,7 @@
 #include "pawn.h"
 
+#include <iostream>
+
 Pawn::Pawn(QString Color,QWidget *parent):Piece(parent)
 {
     this->color=Color;
@@ -12,4 +14,8 @@ Pawn::Pawn(QString Color,QWidget *parent):Piece(parent)
         this->imagen = QPixmap("://imgs/pawn.png");
     }
 
+}
+std::string Pawn::getPiece()
+{
+  return "pawn";
 }

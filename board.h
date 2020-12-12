@@ -6,6 +6,8 @@
 #include <iostream>
 #include <piece.h>
 
+#include <string>
+
 namespace Ui {
   class Board;
 }
@@ -19,18 +21,23 @@ public:
 
     void draw_boxes();
     void draw_pieces();
-
+    void bloquearCeldas();
+    void showPosibilities(std::string pieza , int turno , int jugada);
+    void markBoxPosibility(int row , int col);
     void selectBox(Box * box)
     {
       if(box != this->boxSelected && box->piece != nullptr)
       {
-        this->boxSelected = box;
+          this->boxSelected = box;
           std::cout<<"Seleccionado: "<<boxSelected->piece<<std::endl;
+          std::string pieza = box->piece->getPiece();
+          showPosibilities(pieza , 1 , 1);
       }
     }
     void moveBox(Box * otherBox)
     {
-      if(otherBox != this->boxSelected)
+      //Si el box seleccionado no es el mismo y tampoco esta libre
+      if(otherBox != this->boxSelected && otherBox->libre)
       {
         std::cout<<"Pieza movida: "<<otherBox->piece<<std::endl;
 
@@ -46,10 +53,15 @@ public:
         otherBox->setIconSize(QSize(50,50));
 
         this->boxSelected = nullptr;
+
+        //Recargamos las celdas a su estado original
+        bloquearCeldas();
       }
       else
       {
         std::cout<<"Se deja de seleccionar la pieza actual"<<std::endl;
+        //Bloqueamos todas las celdas
+        bloquearCeldas();
         this->boxSelected = nullptr;
       }
     }

@@ -23,6 +23,15 @@ Board::~Board()
 {
     delete ui;
 }
+void Board::bloquearCeldas()
+{
+  for(int i=0 ; i<8 ; i++)
+      for(int j=0 ; j<8 ; j++)
+        {
+          this->boxes[i][j]->libre = false;
+          this->boxes[i][j]->reloadColor();
+        }
+}
 void Board::draw_pieces()
 {
   for(int i=0 ; i<8 ; i++)
@@ -98,6 +107,44 @@ void Board::draw_boxes()
             }
         }
      }
+}
+
+void Board::markBoxPosibility(int row , int col)
+{
+  //Mientras no se salga del tablero
+  if(row<0 || 7<row || col<0 || 7<col)
+    return;
+  this->boxes[row][col]->libre = true;
+  this->boxes[row][col]->markBox();
+}
+void Board::showPosibilities(std::string pieza , int turno , int jugada)
+{
+  //Dependiendo de la ficha y el turno, se mostraran las posiciones de cada elemento
+  if(turno == 0)  //Turno del primer jugador
+  {
+      //Si se trata de un peon
+      if(pieza.compare("pawn")==0)
+      {
+        std::cout<<"Mostrar opciones de la pieza pawn"<<std::endl;
+        markBoxPosibility(this->boxSelected->row-1 , boxSelected->column);
+        if(jugada == 1)  //En el primer turno, el peon salta 2 casillas
+          //Habilitamos las 2 posiciones que le pertenecen
+          markBoxPosibility(boxSelected->row-2 , boxSelected->column);
+      }
+  }
+  else      //Turno del segundo jugador
+  {
+      //Si se trata de un peon
+      if(pieza.compare("pawn")==0)
+      {
+        std::cout<<"Mostrar opciones de la pieza pawn"<<std::endl;
+        markBoxPosibility(this->boxSelected->row+1 , boxSelected->column);
+        if(jugada == 1)  //En el primer turno, el peon salta 2 casillas
+          //Habilitamos las 2 posiciones que le pertenecen
+          markBoxPosibility(boxSelected->row+2 , boxSelected->column);
+      }
+
+  }
 }
 
 

@@ -38,10 +38,22 @@ void Box::boxClickHandler()
   {
       //Movemos la pieza
       parent->moveBox(this);
-
   }
+}
+void Box::reloadColor()
+{
+  if((this->column+this->row)%2==0)
+  {
+      this->setStyleSheet("background-color: #7E3B3A;" "width: 80px;" "height:80px");
+  }
+  else
+  {
+      this->setStyleSheet("background-color: #FFFFFF;" "width: 80px;" "height:80px");
+  }
+  this->show();
 }
 void Box::markBox()
 {
-  this->show();
+    this->setStyleSheet("background-color: #555555;" "width: 80px;" "height:80px");
+    this->show();
 }

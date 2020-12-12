@@ -6,6 +6,7 @@ class Horse:public Piece
 {
 public:
     Horse(QString Color,QWidget *parent=nullptr);
+    std::string getPiece() override;
 };
 
 #endif // HORSE_H

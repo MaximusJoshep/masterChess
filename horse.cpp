@@ -1,4 +1,5 @@
 #include "horse.h"
+#include <iostream>
 
 Horse::Horse(QString Color,QWidget *parent):Piece(parent)
 {
@@ -11,4 +12,9 @@ Horse::Horse(QString Color,QWidget *parent):Piece(parent)
     {
         this->imagen = QPixmap("://imgs/horse.png");
     }
+}
+
+std::string Horse::getPiece()
+{
+  return "horse";
 }

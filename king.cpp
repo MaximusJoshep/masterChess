@@ -1,5 +1,5 @@
 #include "king.h"
-
+#include <iostream>
 King::King(QString Color,QWidget *parent):Piece(parent)
 {
      this->color=Color;
@@ -13,3 +13,9 @@ King::King(QString Color,QWidget *parent):Piece(parent)
       }
 
 }
+
+std::string King::getPiece()
+{
+  return "king";
+}
+

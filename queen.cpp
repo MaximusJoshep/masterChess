@@ -1,5 +1,5 @@
 #include "queen.h"
-
+#include <iostream>
 Queen::Queen(QString Color,QWidget *parent):Piece(parent)
 {
      this->color=Color;
@@ -11,4 +11,9 @@ Queen::Queen(QString Color,QWidget *parent):Piece(parent)
       {
           this->imagen = QPixmap("://imgs/queen.png");
       }
+}
+
+std::string Queen::getPiece()
+{
+  return "queen";
 }

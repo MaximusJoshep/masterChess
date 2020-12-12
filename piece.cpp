@@ -5,3 +5,4 @@ Piece::Piece(QWidget * parent):QWidget(parent)
 {
 
 }
+
