@@ -108,43 +108,279 @@ void Board::draw_boxes()
         }
      }
 }
+void Board::markDanger(int row , int col)
+{
+    if((turn==0&&this->boxes[row][col]->piece->color.compare("black"))||(turn==1&&this->boxes[row][col]->piece->color.compare("white"))){
+        return;
+    }
+     this->boxes[row][col]->markDangerBox();
+    this->boxes[row][col]->libre = true;
 
+}
 void Board::markBoxPosibility(int row , int col)
 {
   //Mientras no se salga del tablero
-  if(row<0 || 7<row || col<0 || 7<col)
+  if(row<0 || 7<row || col<0 || 7<col){
     return;
+  }
   this->boxes[row][col]->libre = true;
-  this->boxes[row][col]->markBox();
+  if(boxes[row][col]->piece!=nullptr)
+  {
+     markDanger(row,col);
+  }
+  else
+  {
+     this->boxes[row][col]->markBox();
+  }
+
+
+
+
 }
-void Board::showPosibilities(std::string pieza , int turno , int jugada)
+void Board::showPosibilities(std::string pieza , int jugada)
 {
   //Dependiendo de la ficha y el turno, se mostraran las posiciones de cada elemento
-  if(turno == 0)  //Turno del primer jugador
-  {
+
       //Si se trata de un peon
-      if(pieza.compare("pawn")==0)
+   if(pieza.compare("pawn")==0)
       {
-        std::cout<<"Mostrar opciones de la pieza pawn"<<std::endl;
-        markBoxPosibility(this->boxSelected->row-1 , boxSelected->column);
-        if(jugada == 1)  //En el primer turno, el peon salta 2 casillas
-          //Habilitamos las 2 posiciones que le pertenecen
-          markBoxPosibility(boxSelected->row-2 , boxSelected->column);
-      }
-  }
-  else      //Turno del segundo jugador
+          if(turn==0){
+            std::cout<<"Mostrar opciones de la pieza pawn"<<std::endl;
+            markBoxPosibility(this->boxSelected->row+1 , boxSelected->column);
+            if(jugada == 1)  //En el primer turno, el peon salta 2 casillas
+            //Habilitamos las 2 posiciones que le pertenecen
+            markBoxPosibility(boxSelected->row+2 , boxSelected->column);
+          }
+          else
+          {
+              std::cout<<"Mostrar opciones de la pieza pawn"<<std::endl;
+              markBoxPosibility(this->boxSelected->row-1 , boxSelected->column);
+              if(jugada == 1)  //En el primer turno, el peon salta 2 casillas
+                //Habilitamos las 2 posiciones que le pertenecen
+                markBoxPosibility(boxSelected->row-2 , boxSelected->column);
+          }
+     }
+   if(pieza.compare("horse")==0)
+   {
+         markBoxPosibility(this->boxSelected->row+2 , boxSelected->column+1);
+         markBoxPosibility(this->boxSelected->row+2 , boxSelected->column-1);
+         markBoxPosibility(this->boxSelected->row-2 , boxSelected->column+1);
+         markBoxPosibility(this->boxSelected->row-2 , boxSelected->column-1);
+
+         markBoxPosibility(this->boxSelected->row+1 , boxSelected->column+2);
+         markBoxPosibility(this->boxSelected->row+1 , boxSelected->column-2);
+         markBoxPosibility(this->boxSelected->row-1 , boxSelected->column+2);
+         markBoxPosibility(this->boxSelected->row-1 , boxSelected->column-2);
+
+   }
+
+   if(pieza.compare("king")==0)
+   {
+       markBoxPosibility(this->boxSelected->row , boxSelected->column+1);
+       markBoxPosibility(this->boxSelected->row , boxSelected->column-1);
+       markBoxPosibility(this->boxSelected->row+1 , boxSelected->column);
+       markBoxPosibility(this->boxSelected->row-1 , boxSelected->column);
+
+       markBoxPosibility(this->boxSelected->row+1 , boxSelected->column+1);
+       markBoxPosibility(this->boxSelected->row+1 , boxSelected->column-1);
+       markBoxPosibility(this->boxSelected->row-1 , boxSelected->column+1);
+       markBoxPosibility(this->boxSelected->row-1 , boxSelected->column-1);
+
+
+   }
+   if(pieza.compare("bishop")==0||pieza.compare("queen")==0)
+   {
+       //Moviendonos en la diagonal inferior derecha
+       for(int i=1;i<8;i++)
+       {
+
+          if(boxSelected->column+i<8 &&boxSelected->row+i<8)
+          {
+              if(this->boxes[boxSelected->row+i][boxSelected->column+i]->piece!=nullptr)
+              {
+                markDanger(boxSelected->row+i,boxSelected->column+i);
+                  break;
+              }
+               markBoxPosibility(boxSelected->row+i,boxSelected->column+i);
+          }
+
+
+       }
+        //Moviendonos en la diagonal inferior izquierda
+       for(int i=1;i<8;i++)
+       {
+           if(boxSelected->column-i>-1&&boxSelected->row+i<8)
+           {
+               if(this->boxes[boxSelected->row+i][boxSelected->column-i]->piece!=nullptr){
+                   markDanger(boxSelected->row+i,boxSelected->column-i);
+                    break;
+               }
+
+               markBoxPosibility(boxSelected->row+i , boxSelected->column-i);
+           }
+
+
+       }
+        //Moviendonos en la diagonal superior derecha
+       for(int i=1;i<8;i++)
+       {
+           if(boxSelected->row-i>-1&&boxSelected->column+i<8)
+           {
+               if(this->boxes[boxSelected->row-i][boxSelected->column+i]->piece!=nullptr){
+
+                   markDanger(boxSelected->row-i,boxSelected->column+i);
+                   break;
+               }
+                 markBoxPosibility(boxSelected->row-i ,boxSelected->column+i);
+           }
+
+
+       }
+       //Moviendonos en la diagonal superior izquierda
+       for(int i=1;i<8;i++)
+       {
+           if(boxSelected->row-i>-1&&boxSelected->column-i>-1)
+           {
+               if(this->boxes[boxSelected->row-i][boxSelected->column-i]->piece!=nullptr)
+               {
+                   markDanger(boxSelected->row-i,boxSelected->column-i);
+                     break;
+               }
+              markBoxPosibility(boxSelected->row-i ,boxSelected->column-i);
+           }
+
+       }
+
+   }
+   if(pieza.compare("tower")==0||pieza.compare("queen")==0)
+   {
+       //Moviendonos en la  misma columna hacia arriba
+       for(int i=1;i<8;i++)
+       {
+           if(boxSelected->row+i<8)
+           {
+               if(this->boxes[boxSelected->row+i][boxSelected->column]->piece!=nullptr){
+                   markDanger(boxSelected->row+i,boxSelected->column);
+                   break;
+               }
+               markBoxPosibility(boxSelected->row+i ,boxSelected->column);
+           }
+
+       }
+        //Moviendonos en la  misma columna hacia abajo
+       for(int i=1;i<8;i++)
+       {
+           if(boxSelected->row-i>-1)
+           {
+               if(this->boxes[boxSelected->row-i][boxSelected->column]->piece!=nullptr)
+               {
+                   markDanger(boxSelected->row-i,boxSelected->column);
+                    break;
+               }
+              markBoxPosibility(boxSelected->row-i ,boxSelected->column);
+           }
+
+       }
+       //Moviendonos en la  misma fila hacia arriba
+       for(int i=1;i<8;i++)
+       {
+           if(boxSelected->column+i<8)
+           {
+               if(this->boxes[boxSelected->row][boxSelected->column+i]->piece!=nullptr)
+               {
+                   markDanger(boxSelected->row,boxSelected->column+i);
+                     break;
+               }
+              markBoxPosibility(boxSelected->row,boxSelected->column+i);
+           }
+
+
+
+       }
+         //Moviendonos en la  misma fila hacia abajo
+       for(int i=1;i<8;i++)
+       {
+           if(boxSelected->column-i>-1)
+           {
+               if(this->boxes[boxSelected->row][boxSelected->column-i]->piece!=nullptr)
+               {
+                   markDanger(boxSelected->row,boxSelected->column-i);
+                   break;
+               }
+               markBoxPosibility(boxSelected->row,boxSelected->column-i);
+
+           }
+
+
+
+       }
+
+   }
+
+
+}
+void Board:: selectBox(Box * box)
+{
+  if(box != this->boxSelected && box->piece != nullptr)
   {
-      //Si se trata de un peon
-      if(pieza.compare("pawn")==0)
-      {
-        std::cout<<"Mostrar opciones de la pieza pawn"<<std::endl;
-        markBoxPosibility(this->boxSelected->row+1 , boxSelected->column);
-        if(jugada == 1)  //En el primer turno, el peon salta 2 casillas
-          //Habilitamos las 2 posiciones que le pertenecen
-          markBoxPosibility(boxSelected->row+2 , boxSelected->column);
-      }
+      if((box->piece->color.compare("white")==0&&turn==0)||(box->piece->color.compare("black")==0&&turn==1)){
+            this->boxSelected = box;
+            std::cout<<"Seleccionado: "<<boxSelected->piece<<std::endl;
+            std::string pieza = box->piece->getPiece();
+            showPosibilities(pieza ,  boxSelected->piece->move);
+       }
 
   }
+}
+void Board::moveBox(Box * otherBox)
+{
+  //Si el box seleccionado no es el mismo y tampoco esta libre
+  if(otherBox != this->boxSelected && otherBox->libre)
+  {
+    std::cout<<"Pieza movida: "<<otherBox->piece<<std::endl;
+     boxSelected->piece->move++;
+    //Actualizamos los punteros de las piezas
+    otherBox->piece = boxSelected->piece;
+    this->boxSelected->piece = nullptr;
+
+    //Mostramo los iconos de las piezas
+    otherBox->setIcon(QIcon(otherBox->piece->imagen));
+    this->boxSelected->setIcon(QIcon());
+
+    //Modificamos el tamaño de los iconos
+    otherBox->setIconSize(QSize(50,50));
+
+    this->boxSelected = nullptr;
+
+    //Recargamos las celdas a su estado original
+    bloquearCeldas();
+    //Cambiamos el turno
+    changeTurn();
+
+  }
+  else
+  {
+    std::cout<<"Se deja de seleccionar la pieza actual"<<std::endl;
+    //Bloqueamos todas las celdas
+    bloquearCeldas();
+    this->boxSelected = nullptr;
+  }
+}
+void Board::changeTurn()
+{
+    //Cambiamos el turno
+    if(turn==0)
+    {
+        turn=1;
+    }
+    else
+    {
+        turn=0;
+    }
+}
+Box* Board::getBoxSelected()
+{
+  return this->boxSelected;
 }
 
 

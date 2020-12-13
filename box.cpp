@@ -31,6 +31,7 @@ void Box::boxClickHandler()
   Board * parent = static_cast<Board*>(this->parent());
   if(parent->getBoxSelected() == nullptr)
   {
+
       //seleccionamos la pieza
       parent->selectBox(this);
   }
@@ -57,3 +58,8 @@ void Box::markBox()
     this->setStyleSheet("background-color: #555555;" "width: 80px;" "height:80px");
     this->show();
 }
+ void Box::markDangerBox()
+ {
+     this->setStyleSheet("background-color: #F32A2A;" "width: 80px;" "height:80px");
+     this->show();
+ }

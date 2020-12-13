@@ -13,6 +13,7 @@ public:
   Piece(QWidget * parent = nullptr);
   QString color;
   QPixmap imagen;
+  int move=1;
 
   virtual std::string getPiece() = 0;
 };
