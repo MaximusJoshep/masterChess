@@ -16,6 +16,7 @@ public:
   int move=1;
 
   virtual std::string getPiece() = 0;
+  std::string getColor();
 };
 
 #endif // PIECE_H

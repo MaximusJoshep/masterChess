@@ -23,12 +23,12 @@ public:
     void draw_pieces();
     void bloquearCeldas();
     void showPosibilities(std::string pieza  , int jugada);
-    void markBoxPosibility(int row , int col);
+    void markBoxPosibility(int row , int col , bool captura=false);
     void selectBox(Box * box);
     void moveBox(Box * otherBox);
     Box * getBoxSelected();
     void changeTurn();
-    void markDanger(int row , int col);
+    void markDanger(int row , int col , bool captura=false);
 
 
 private:
