@@ -122,13 +122,27 @@ void Board::markDanger(int row , int col , bool captura)
     this->boxes[row][col]->libre = true;
 
 }
+void Board::markCastling(int row, int col)
+{
+
+    //Comprobamos que de ambas piezas sea su primera jugada
+    if(this->boxes[row][col]->piece==nullptr)
+    {
+        return;
+    }
+    if(this->boxSelected->piece->move==1 && this->boxes[row][col]->piece->move==1)
+    {
+        this->boxes[row][col]->markCastlingBox();
+       this->boxes[row][col]->libre = true;
+    }
+}
 void Board::markBoxPosibility(int row , int col , bool captura)
 {
   //Mientras no se salga del tablero
   if(row<0 || 7<row || col<0 || 7<col){
     return;
   }
-  this->boxes[row][col]->libre = true;
+
   if(boxes[row][col]->piece!=nullptr || captura)
   {
     if(captura)
@@ -140,6 +154,7 @@ void Board::markBoxPosibility(int row , int col , bool captura)
   }
   else
   {
+     this->boxes[row][col]->libre = true;
      this->boxes[row][col]->markBox();
   }
 }
@@ -236,11 +251,28 @@ void Board::showPosibilities(std::string pieza , int jugada)
        markBoxPosibility(this->boxSelected->row , boxSelected->column-1);
        markBoxPosibility(this->boxSelected->row+1 , boxSelected->column);
        markBoxPosibility(this->boxSelected->row-1 , boxSelected->column);
-
        markBoxPosibility(this->boxSelected->row+1 , boxSelected->column+1);
        markBoxPosibility(this->boxSelected->row+1 , boxSelected->column-1);
        markBoxPosibility(this->boxSelected->row-1 , boxSelected->column+1);
        markBoxPosibility(this->boxSelected->row-1 , boxSelected->column-1);
+
+       //Posiblidad de enroque
+       if(boxSelected->column>3&&boxSelected->column<6){
+               //Posiblidad de enroque corto
+        if(boxes[boxSelected->row][boxSelected->column+1]->piece==nullptr && boxes[boxSelected->row][boxSelected->column+2]->piece==nullptr)
+        {
+           markCastling(boxSelected->row,boxSelected->column+3);
+           castling=true;
+        }
+            //Posiblidad de enroque largo
+        if(boxes[boxSelected->row][boxSelected->column-1]->piece==nullptr && boxes[boxSelected->row][boxSelected->column-2]->piece==nullptr && boxes[boxSelected->row][boxSelected->column-3]->piece==nullptr)
+        {
+           markCastling(boxSelected->row,boxSelected->column-4);
+           castling=true;
+        }
+
+      }
+
    }
    if(pieza.compare("bishop")==0||pieza.compare("queen")==0)
    {
@@ -330,6 +362,12 @@ void Board::showPosibilities(std::string pieza , int jugada)
            {
                if(this->boxes[boxSelected->row][boxSelected->column+i]->piece!=nullptr)
                {
+                    //Posiblidad de enroque largo
+                   if((pieza.compare("tower")==0)&&i==4)
+                   {
+                       castling=true;
+                       markCastling(boxSelected->row,boxSelected->column+i);
+                   }
                    markDanger(boxSelected->row,boxSelected->column+i);
                      break;
                }
@@ -343,12 +381,20 @@ void Board::showPosibilities(std::string pieza , int jugada)
            {
                if(this->boxes[boxSelected->row][boxSelected->column-i]->piece!=nullptr)
                {
+                   //Posiblidad de enrroque corto
+                   if((pieza.compare("tower")==0)&&i==3)
+                   {
+                       castling=true;
+                       markCastling(boxSelected->row,boxSelected->column-i);
+
+                   }
                    markDanger(boxSelected->row,boxSelected->column-i);
                    break;
                }
                markBoxPosibility(boxSelected->row,boxSelected->column-i);
            }
        }
+
    }
 }
 void Board::selectBox(Box * box)
@@ -370,21 +416,60 @@ void Board::moveBox(Box * otherBox)
   {
     boxSelected->piece->move++;
     //Actualizamos los punteros de las piezas
-    otherBox->piece = boxSelected->piece;
-    this->boxSelected->piece = nullptr;
 
-    //Marcamos como vulnerable por "captura por paso" al peon que haga su primera jugada con dos saltos
-    if(otherBox->piece->getPiece().compare("pawn") && otherBox->piece->move==1 && (otherBox->row==3 || otherBox->row==4))
+    if(castling)
     {
-        Pawn * peon = static_cast<Pawn*>(otherBox->piece);
-        peon->vulnerableCapturaPaso = true;
+        if(otherBox->piece->getPiece().compare("king")==0)
+        {
+            if(boxSelected->column==7){
+                Castling(otherBox,0);
+            }
+            else
+            {
+               Castling(otherBox,1);
+            }
+
+
+        }
+       else if(otherBox->piece->getPiece().compare("tower")==0)
+        {
+           if(otherBox->column==7)
+           {
+               Castling(otherBox,1);
+
+           }
+           else
+           {
+               Castling(otherBox,2);
+           }
+
+        }
+        castling=false;
+    }
+
+    else
+    {
+        otherBox->piece = boxSelected->piece;
+
+        //Mostramo los iconos de las piezas
+        otherBox->setIcon(QIcon(otherBox->piece->imagen));
+        this->boxSelected->setIcon(QIcon());
+        otherBox->setIconSize(QSize(50,50));
+
+
+
+        this->boxSelected->piece = nullptr;
+        //Marcamos como vulnerable por "captura por paso" al peon que haga su primera jugada con dos saltos
+        if(otherBox->piece->getPiece().compare("pawn") && otherBox->piece->move==1 && (otherBox->row==3 || otherBox->row==4))
+        {
+            Pawn * peon = static_cast<Pawn*>(otherBox->piece);
+            peon->vulnerableCapturaPaso = true;
+        }
+
+
     }
 
 
-    //Mostramo los iconos de las piezas
-    otherBox->setIcon(QIcon(otherBox->piece->imagen));
-    this->boxSelected->setIcon(QIcon());
-    otherBox->setIconSize(QSize(50,50));
 
     this->boxSelected = nullptr;
 
@@ -401,6 +486,46 @@ void Board::moveBox(Box * otherBox)
     bloquearCeldas();
     this->boxSelected = nullptr;
   }
+}
+void Board::Castling(Box * otherBox,int variant)
+{
+    int first=0,second=0;
+    if(variant==0)
+    {
+
+       first=2;
+       second=1;
+         std::cout<<"Entro aqui if  "<<otherBox->column<<" "<<first<<" "<<otherBox->column+first<<std::endl;
+
+    }
+    else if(variant==1)
+    {
+        first=-2;
+        second=-1;
+    }
+
+    else
+    {
+        first=3;
+        second=2;
+    }
+    std::cout<<"if  "<<otherBox->column<<" "<<first<<" "<<otherBox->column+first<<std::endl;
+
+    std::cout<<" Fila: "<<otherBox->row<<" Columna: "<<otherBox->column+first<<" Nombre: "<<otherBox->piece->getPiece()<<std::endl;
+    std::cout<<" Fila: "<<otherBox->row<<" Columna: "<<otherBox->column+second<<" Nombre: "<<boxSelected->piece->getPiece()<<std::endl;
+
+    boxes[otherBox->row][otherBox->column+first]->piece=otherBox->piece;
+    boxes[otherBox->row][otherBox->column+second]->piece=boxSelected->piece;
+
+
+    boxes[otherBox->row][otherBox->column+first]->setIcon(QIcon(otherBox->piece->imagen));
+    boxes[otherBox->row][otherBox->column+second]->setIcon(QIcon(boxSelected->piece->imagen));
+    this->boxSelected->setIcon(QIcon());
+    otherBox->setIcon(QIcon());
+    std::cout<<"ENtra: "<<std::endl;
+
+    this->boxSelected->piece = nullptr;
+    otherBox->piece=nullptr;
 }
 void Board::changeTurn()
 {

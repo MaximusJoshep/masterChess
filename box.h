@@ -23,6 +23,7 @@ public:
 
     void reloadColor();
     void markBox();
+    void markCastlingBox();
     void markDangerBox();
 
 public Q_SLOTS:

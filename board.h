@@ -29,6 +29,8 @@ public:
     Box * getBoxSelected();
     void changeTurn();
     void markDanger(int row , int col , bool captura=false);
+    void markCastling(int row , int col);
+    void Castling(Box * otherBox,int variant);
 
 
 private:
@@ -36,6 +38,9 @@ private:
     Box * boxes[8][8];
     int turn=0;
     Box * boxSelected = nullptr;
+
+    bool castling{false};
+
 
 };
 
