@@ -19,6 +19,22 @@ public:
   std::string getColor();
   int row;
   int column;
+  friend bool operator== (const Piece& a, const Piece& b)
+      {
+            if(a.row==b.row&&a.column==b.column)
+            {
+                return true;
+            }
+
+
+          return false;
+      }
+  friend bool operator!= (const Piece& a, const Piece& b)
+      {
+
+
+          return !(a==b);
+      }
 };
 
 #endif // PIECE_H

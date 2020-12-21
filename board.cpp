@@ -111,9 +111,10 @@ void Board::draw_boxes()
      {
          for(int j=0;j<8;j++)
          {
-             if(j!=4){
-                   whitePieces.push_back(this->boxes[i][j]->piece);
+             if(j==4&&i==0){
+                   continue;
               }
+             whitePieces.push_back(this->boxes[i][j]->piece);
          }
      }
      //Llenamos el vector de las fichas negras
@@ -121,9 +122,10 @@ void Board::draw_boxes()
      {
          for(int j=0;j<8;j++)
          {
-             if(j!=4){
-                   blackPieces.push_back(this->boxes[i][j]->piece);
+             if(j==4&&i==7){
+                  continue;
               }
+              blackPieces.push_back(this->boxes[i][j]->piece);
          }
      }
 
@@ -151,8 +153,12 @@ void Board:: getDangerPossibility(Box* box,int row , int col ,std::vector<Box*> 
       this->boxes[row][col]->libre = true;
         return;black
     }*/
-    if(this->boxes[row][col]->piece->color.compare(box->piece->color)==0){
+    if((this->boxes[row][col]->piece->color.compare(box->piece->color)==0)&&box->piece==boxSelected->piece){
        return;
+    }
+    if(box->piece->getPiece().compare("pawn")==0&&box->column==col)
+    {
+        return;
     }
     possibilities.push_back(boxes[row][col]);
     //this->boxes[row][col]->markDangerBox();
@@ -195,16 +201,17 @@ std::vector<Box*> Board::getPosibilities(Box* box)
   {
     if(box->piece->getColor().compare("white")==0)
     {
-
-     getBoxPosibility(box,box->row+1 , box->column,possibilities);
+        if(box->piece==boxSelected->piece){
+            getBoxPosibility(box,box->row+1 , box->column,possibilities);
+        }
       //Ataque del peon
       Box * diagLeft = this->boxes[box->row+1][box->column-1];
-      if(diagLeft->piece != nullptr)
+      if(diagLeft->piece != nullptr||box->piece!=boxSelected->piece)
          getBoxPosibility(box,box->row+1 , box->column-1,possibilities);
 
 
       Box * diagRight = this->boxes[box->row+1][box->column+1];
-      if(diagRight->piece != nullptr)
+      if(diagRight->piece != nullptr||box->piece!=boxSelected->piece)
          getBoxPosibility(box,box->row+1 , box->column+1,possibilities);
 
       //Captura al paso
@@ -227,7 +234,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
           }
 
       }*/
-      if(box->piece->move== 1)
+      if(box->piece->move== 1&&box->piece==boxSelected->piece)
       {
        getBoxPosibility(box,box->row+2 , box->column,possibilities);
 
@@ -235,15 +242,17 @@ std::vector<Box*> Board::getPosibilities(Box* box)
     }
     else
     {
-      getBoxPosibility(box,box->row-1 , box->column,possibilities);
+        if(box->piece==boxSelected->piece){
+            getBoxPosibility(box,box->row-1 , box->column,possibilities);
+        }
 
       //Ataque del peon
       Box * diagLeft = this->boxes[box->row-1][box->column-1];
-      if(diagLeft->piece != nullptr)
+      if(diagLeft->piece != nullptr||box->piece!=boxSelected->piece)
           getBoxPosibility(box,box->row-1 , box->column-1,possibilities);
 
       Box * diagRight = this->boxes[box->row-1][box->column+1];
-      if(diagRight->piece != nullptr)
+      if(diagRight->piece != nullptr||box->piece!=boxSelected->piece)
          getBoxPosibility(box,box->row-1 , box->column+1,possibilities);
 
       //Captura al paso
@@ -264,7 +273,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
                 getBoxPosibility(box->row-1 , box->column-1 ,possibilities, true);
           }
       }*/
-      if(box->piece->move == 1)
+      if(box->piece->move == 1&&box->piece==boxSelected->piece)
       {
        getBoxPosibility(box,box->row-2 , box->column,possibilities);
 
@@ -445,13 +454,14 @@ void Board::selectBox(Box * box)
     {
       this->boxSelected = box;
       //std::string pieza = box->piece->getPiece();
+       std::vector<Box*> tmp=getPosibilities(boxSelected);
       if(jaque)
       {
-
+         showPossibilities(outJaquePossibilities(tmp));
       }
       else
       {
-          std::vector<Box*> tmp=getPosibilities(boxSelected);
+
           for(size_t i=0;i<tmp.size();i++)
           {
             std::cout<<tmp[i]->row<<","<<tmp[i]->column<<std::endl;
@@ -513,25 +523,17 @@ void Board::moveBox(Box * otherBox)
         }
         otherBox->piece = boxSelected->piece;
 
-        //std::cout<<"Posicion de la ficha seleccionada: "<<otherBox->piece->row<<","<<otherBox->piece->column<<std::endl;
-        //std::cout<<"Posicion de la ficha: "<<otherBox->piece->row<<","<<otherBox->piece->column<<std::endl;
-
-
-
-        //
-        //boxSelected=otherBox;
-        //std::cout<<"Pieza: "<<boxSelected->piece->getPiece()<<"Fila: "<<boxSelected->row<<"Columna: "<<boxSelected->column<<std::endl;
         //Mostramos los iconos de las piezas
         otherBox->setIcon(QIcon(otherBox->piece->imagen));
         this->boxSelected->setIcon(QIcon());
         otherBox->setIconSize(QSize(50,50));
         //Verificamos si el lugar donde cayo ameza la pisicion del rey enemigo
-        std::vector<Box*> tmp=getPosibilities(otherBox);
-        jaqueVerification(tmp);
         if(jaque)
         {
-            DeathRoad=tmp;
+            jaque=false;
         }
+        jaqueVerification(otherBox);
+
 
 
 
@@ -635,8 +637,110 @@ void Board::showPossibilities(std::vector<Box*> possibilities)
     }
     possibilities.clear();
 }
-void Board::jaqueVerification(std::vector<Box*> possibilities)
+
+void Board::generateDeathRoad(Box* attacker, Box* king)
 {
+    if(attacker->piece->getPiece().compare("pawn")==0||attacker->piece->getPiece().compare("horse")==0)
+    {
+       DeathRoad.push_back(attacker);
+    }
+    if(attacker->piece->getPiece().compare("queen")==0||attacker->piece->getPiece().compare("tower")==0)
+    {
+        if(attacker->row==king->row)
+        {
+           if(attacker->column<king->column)
+           {
+               for(int i=attacker->column;i<king->column;i++)
+               {
+                   DeathRoad.push_back(boxes[attacker->row][i]);
+               }
+           }
+           else
+           {
+               for(int i=king->column+1;i<attacker->column+1;i++)
+               {
+                   DeathRoad.push_back(boxes[attacker->row][i]);
+               }
+           }
+
+        }
+        else if(attacker->column==king->column)
+        {
+            if(attacker->row<king->row)
+            {
+                for(int i=attacker->row;i<king->row;i++)
+                {
+                    DeathRoad.push_back(boxes[i][attacker->column]);
+                }
+            }
+            else
+            {
+                for(int i=king->row+1;i<attacker->row+1;i++)
+                {
+                     DeathRoad.push_back(boxes[i][attacker->column]);
+                }
+            }
+        }
+    }
+     if(attacker->piece->getPiece().compare("queen")==0||attacker->piece->getPiece().compare("bishop")==0)
+     {
+         if(attacker->row<king->row)
+        {
+          if(attacker->column<king->column)
+          {
+              int i=attacker->row;
+              int j=attacker->column;
+              while(i!=king->row)
+              {
+                  DeathRoad.push_back(boxes[i][j]);
+                  i++;
+                  j++;
+              }
+          }
+          else
+          {
+              int i=attacker->row;
+              int j=attacker->column;
+              while(i!=king->row)
+              {
+                  DeathRoad.push_back(boxes[i][j]);
+                  i++;
+                  j--;
+              }
+          }
+       }
+       else
+       {
+             if(attacker->column<king->column)
+             {
+                 int i=attacker->row;
+                 int j=attacker->column;
+                 while(i!=king->row)
+                 {
+                     DeathRoad.push_back(boxes[i][j]);
+                     i--;
+                     j++;
+                 }
+             }
+             else
+             {
+                 int i=attacker->row;
+                 int j=attacker->column;
+                 while(i!=king->row)
+                 {
+                     DeathRoad.push_back(boxes[i][j]);
+                     i--;
+                     j--;
+                 }
+             }
+
+       }
+
+     }
+}
+void Board::jaqueVerification(Box* attacker)
+{
+    std::vector<Box*> possibilities=getPosibilities(attacker);
     for(std::size_t i=0;i<possibilities.size();i++)
     {
         if(possibilities[i]->piece!=nullptr)
@@ -658,6 +762,12 @@ void Board::jaqueVerification(std::vector<Box*> possibilities)
 
                msgBox.setStandardButtons(QMessageBox::Ok);
                msgBox.exec();
+               generateDeathRoad(attacker,possibilities[i]);
+               std::cout<<"-------------Camino de la muerte------------"<<std::endl;
+               for(size_t i=0;i<DeathRoad.size();i++)
+               {
+                   std::cout<<DeathRoad[i]->row<<","<<DeathRoad[i]->column<<std::endl;
+               }
            }
         }
 
@@ -693,7 +803,7 @@ void Board::removePiece(Piece *piece)
 }
 void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
 {
-
+  std::cout<<"............................"<<std::endl;
     if(turn==0)
     {
         for(size_t i=0;i<blackPieces.size();i++)
@@ -716,10 +826,12 @@ void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
         for(size_t i=0;i<whitePieces.size();i++)
         {
             std::vector<Box*> tmp=getPosibilities(boxes[whitePieces[i]->row][whitePieces[i]->column]);
+
             for(size_t j=0;j<tmp.size();j++)
             {
                 if(row==tmp[j]->row&&tmp[j]->column==col)
                 {
+
                     return;
                 }
 
@@ -728,5 +840,34 @@ void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
     }
     getBoxPosibility(boxSelected,row,col,possibilities);
 
+}
+std::vector<Box*> Board::outJaquePossibilities(std::vector<Box*>  &possibilities)
+{
+    std::vector<Box*> tmp;
+    for(size_t i=0;i<DeathRoad.size();i++)
+    {
+        for(size_t j=0;j<possibilities.size();j++)
+        {
+            if(boxSelected->piece->getPiece().compare("king")==0)
+            {
+                if(DeathRoad[i]!=possibilities[j])
+                {
+                    tmp.push_back(possibilities[j]);
+                }
+                if(DeathRoad.size()==1)
+                {
+                    tmp.push_back(DeathRoad[0]);
+                }
+            }
+            else
+            {
+                if(DeathRoad[i]==possibilities[j])
+                {
+                    tmp.push_back(possibilities[j]);
+                }
+            }
+        }
+    }
+    return tmp;
 }
 
