@@ -1,6 +1,6 @@
 #include "tower.h"
 #include <iostream>
-Tower::Tower(QString Color,QWidget *parent):Piece(parent)
+Tower::Tower(int Row,int Column,QString Color,QWidget *parent):Piece(Row,Column,parent)
 {
      this->color=Color;
       if(Color.compare("white")==0)

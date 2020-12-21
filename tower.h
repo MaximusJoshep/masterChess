@@ -5,7 +5,7 @@
 class Tower:public Piece
 {
 public:
-    Tower(QString Color,QWidget *parent=nullptr);
+    Tower(int Row,int Column,QString Color,QWidget *parent=nullptr);
     std::string getPiece() override;
 };
 

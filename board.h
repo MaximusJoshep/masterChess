@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <piece.h>
-
+#include <cstring>
 #include <string>
 
 namespace Ui {
@@ -22,15 +22,21 @@ public:
     void draw_boxes();
     void draw_pieces();
     void bloquearCeldas();
-    void showPosibilities(std::string pieza  , int jugada);
-    void markBoxPosibility(int row , int col , bool captura=false);
+    std::vector<Box*> getPosibilities(Box* box);
     void selectBox(Box * box);
     void moveBox(Box * otherBox);
     Box * getBoxSelected();
     void changeTurn();
-    void markDanger(int row , int col , bool captura=false);
+    void getBoxPosibility(Box* box,int row , int col , std::vector<Box*> &possibilities, bool captura=false);
+    void getDangerPossibility(Box* box,int row , int col ,std::vector<Box*> &possibilities, bool captura=false);
     void markCastling(int row , int col);
     void Castling(Box * otherBox,int variant);
+    void showPossibilities(std::vector<Box*> possibilities);
+    void jaqueVerification(std::vector<Box*> possibilities);
+    void removePiece(Piece* piece);
+    void comprobeMoveKing(int row,int col,std::vector<Box*> &possibilities);
+
+    //En este metodo llenaremos el vector con las casillas de
 
 
 private:
@@ -39,8 +45,13 @@ private:
     int turn=0;
     Box * boxSelected = nullptr;
 
-    bool castling{false};
+    std::vector<Box*> DeathRoad;
 
+     std::vector<Piece*> whitePieces;
+      std::vector<Piece*> blackPieces;
+    //std::vector<Box*>possibilities;
+    bool castling{false};
+    bool jaque{false};
 
 };
 

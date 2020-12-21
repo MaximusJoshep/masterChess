@@ -5,7 +5,7 @@
 class Bishop:public Piece
 {
 public:
-    Bishop(QString Color, QWidget *parent=nullptr);
+    Bishop(int Row,int Column,QString Color, QWidget *parent=nullptr);
     std::string getPiece() override;
 };
 

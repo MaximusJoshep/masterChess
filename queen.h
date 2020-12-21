@@ -5,7 +5,7 @@
 class Queen:public Piece
 {
 public:
-    Queen(QString Color,QWidget *parent=nullptr);
+    Queen(int Row,int Column,QString Color,QWidget *parent=nullptr);
     std::string getPiece() override;
 };
 

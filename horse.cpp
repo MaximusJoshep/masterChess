@@ -1,7 +1,7 @@
 #include "horse.h"
 #include <iostream>
 
-Horse::Horse(QString Color,QWidget *parent):Piece(parent)
+Horse::Horse(int Row,int Column,QString Color,QWidget *parent):Piece(Row,Column,parent)
 {
    this->color=Color;
     if(Color.compare("white")==0)

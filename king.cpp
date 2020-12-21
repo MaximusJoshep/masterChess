@@ -1,6 +1,6 @@
 #include "king.h"
 #include <iostream>
-King::King(QString Color,QWidget *parent):Piece(parent)
+King::King(int Row,int Column,QString Color,QWidget *parent):Piece(Row,Column,parent)
 {
      this->color=Color;
       if(Color.compare("white")==0)

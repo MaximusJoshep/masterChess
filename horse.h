@@ -5,7 +5,7 @@
 class Horse:public Piece
 {
 public:
-    Horse(QString Color,QWidget *parent=nullptr);
+    Horse(int Row,int Column,QString Color,QWidget *parent=nullptr);
     std::string getPiece() override;
 };
 

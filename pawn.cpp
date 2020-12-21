@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-Pawn::Pawn(QString Color,QWidget *parent):Piece(parent)
+Pawn::Pawn(int Row,int Column,QString Color,QWidget *parent):Piece(Row,Column,parent)
 {
     this->color=Color;
     if(Color.compare("white")==0)

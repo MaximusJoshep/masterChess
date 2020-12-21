@@ -48,44 +48,44 @@ void Board::draw_pieces()
 void Board::draw_boxes()
 {
     this->boxes[0][0] = new Box(0,0,this);
-    boxes[0][0]->piece = new Tower("white",this);
+    boxes[0][0]->piece = new Tower(0,0,"white",this);
     this->boxes[0][7] = new Box(0,7,this);
-    boxes[0][7]->piece = new Tower("white",this);
+    boxes[0][7]->piece = new Tower(0,7,"white",this);
 
     this->boxes[7][0]=new Box(7,0,this);
-    this->boxes[7][0]->piece = new Tower("black",this);
+    this->boxes[7][0]->piece = new Tower(7,0,"black",this);
     this->boxes[7][7]=new Box(7,7,this);
-    this->boxes[7][7]->piece = new Tower("black",this);
+    this->boxes[7][7]->piece = new Tower(7,7,"black",this);
 
     this->boxes[0][1]=new Box(0,1,this);
-    this->boxes[0][1]->piece = new Horse("white",this);
+    this->boxes[0][1]->piece = new Horse(0,1,"white",this);
     this->boxes[0][6]=new Box(0,6,this);
-    this->boxes[0][6]->piece = new Horse("white",this);
+    this->boxes[0][6]->piece = new Horse(0,6,"white",this);
 
     this->boxes[7][1]=new Box(7,1,this);
-    this->boxes[7][1]->piece=new Horse("black",this);
+    this->boxes[7][1]->piece=new Horse(7,1,"black",this);
     this->boxes[7][6]=new Box(7,6,this);
-    this->boxes[7][6]->piece = new Horse("black",this);
+    this->boxes[7][6]->piece = new Horse(7,6,"black",this);
 
     this->boxes[0][2]=new Box(0,2,this);
-    this->boxes[0][2]->piece = new Bishop("white",this);
+    this->boxes[0][2]->piece = new Bishop(0,2,"white",this);
     this->boxes[0][5]=new Box(0,5,this);
-    this->boxes[0][5]->piece = new Bishop("white",this);
+    this->boxes[0][5]->piece = new Bishop(0,5,"white",this);
 
     this->boxes[7][2]=new Box(7,2,this);
-    this->boxes[7][2]->piece = new Bishop("black",this);
+    this->boxes[7][2]->piece = new Bishop(7,2,"black",this);
     this->boxes[7][5]=new Box(7,5,this);
-    this->boxes[7][5]->piece = new Bishop("black",this);
+    this->boxes[7][5]->piece = new Bishop(7,5,"black",this);
 
     this->boxes[0][3]=new Box(0,3,this);
-    this->boxes[0][3]->piece = new Queen("white",this);
+    this->boxes[0][3]->piece = new Queen(0,3,"white",this);
     this->boxes[7][3]=new Box(7,3,this);
-    this->boxes[7][3]->piece = new Queen("black",this);
+    this->boxes[7][3]->piece = new Queen(7,3,"black",this);
 
     this->boxes[0][4]=new Box(0,4,this);
-    this->boxes[0][4]->piece = new King("white",this);
+    this->boxes[0][4]->piece = new King(0,4,"white",this);
     this->boxes[7][4]=new Box(7,4,this);
-    this->boxes[7][4]->piece = new King("black",this);
+    this->boxes[7][4]->piece = new King(7,4,"black",this);
 
      for(int i = 1; i < 7; i++) {
          for(int j = 0; j < 8; j++)
@@ -93,12 +93,12 @@ void Board::draw_boxes()
             if(i==1)
             {
                 this->boxes[i][j] = new Box(i,j,this);
-                this->boxes[i][j]->piece = new Pawn("white",this);
+                this->boxes[i][j]->piece = new Pawn(i,j,"white",this);
             }
             else if(i==6)
             {
                 this->boxes[i][j] = new Box(i,j,this);
-                this->boxes[i][j]->piece = new Pawn("black",this);
+                this->boxes[i][j]->piece = new Pawn(i,j,"black",this);
             }
             else
             {
@@ -106,22 +106,29 @@ void Board::draw_boxes()
             }
         }
      }
-}
-void Board::markDanger(int row , int col , bool captura)
-{
-    if(captura)
-    {
-      this->boxes[row][col]->markDangerBox();
-      this->boxes[row][col]->libre = true;
-        return;
-    }
-    if((turn==0&&this->boxes[row][col]->piece->color.compare("black"))||(turn==1&&this->boxes[row][col]->piece->color.compare("white"))){
-        return;
-    }
-    this->boxes[row][col]->markDangerBox();
-    this->boxes[row][col]->libre = true;
+     //Llenamos el vector de las fichas blancas
+     for(int i=0;i<2;i++)
+     {
+         for(int j=0;j<8;j++)
+         {
+             if(j!=4){
+                   whitePieces.push_back(this->boxes[i][j]->piece);
+              }
+         }
+     }
+     //Llenamos el vector de las fichas negras
+     for(int i=6;i<8;i++)
+     {
+         for(int j=0;j<8;j++)
+         {
+             if(j!=4){
+                   blackPieces.push_back(this->boxes[i][j]->piece);
+              }
+         }
+     }
 
 }
+
 void Board::markCastling(int row, int col)
 {
 
@@ -133,269 +140,302 @@ void Board::markCastling(int row, int col)
     if(this->boxSelected->piece->move==1 && this->boxes[row][col]->piece->move==1)
     {
         this->boxes[row][col]->markCastlingBox();
-       this->boxes[row][col]->libre = true;
+        this->boxes[row][col]->libre = true;
     }
 }
-void Board::markBoxPosibility(int row , int col , bool captura)
+void Board:: getDangerPossibility(Box* box,int row , int col ,std::vector<Box*> &possibilities, bool captura)
+{
+   /* if(captura)
+    {
+      this->boxes[row][col]->markDangerBox();
+      this->boxes[row][col]->libre = true;
+        return;black
+    }*/
+    if(this->boxes[row][col]->piece->color.compare(box->piece->color)==0){
+       return;
+    }
+    possibilities.push_back(boxes[row][col]);
+    //this->boxes[row][col]->markDangerBox();
+    //this->boxes[row][col]->libre = true;
+
+
+
+}
+void Board::getBoxPosibility(Box* box,int row , int col,std::vector<Box*> &possibilities , bool captura)
 {
   //Mientras no se salga del tablero
   if(row<0 || 7<row || col<0 || 7<col){
     return;
   }
 
-  if(boxes[row][col]->piece!=nullptr || captura)
+  if(boxes[row][col]->piece!=nullptr)
   {
-    if(captura)
+    /*if(captura)
     {
-      markDanger(row,col,captura);
+     getDangerPossibility(row,col,possibilities,captura);
       return;
-    }
-    markDanger(row,col);
+    }*/
+
+   getDangerPossibility(box,row,col,possibilities);
   }
   else
   {
-     this->boxes[row][col]->libre = true;
-     this->boxes[row][col]->markBox();
+
+     possibilities.push_back(boxes[row][col]);
+     //this->boxes[row][col]->libre = true;
+     //this->boxes[row][col]->markBox();
+
+
   }
 }
-void Board::showPosibilities(std::string pieza , int jugada)
+std::vector<Box*> Board::getPosibilities(Box* box)
 {
-  if(pieza.compare("pawn")==0)
+  std::vector<Box*> possibilities;
+  if(box->piece->getPiece().compare("pawn")==0)
   {
-    if(turn==0)
+    if(box->piece->getColor().compare("white")==0)
     {
-      markBoxPosibility(this->boxSelected->row+1 , boxSelected->column);
-      //Ataque del peon
-      Box * diagLeft = this->boxes[boxSelected->row+1][boxSelected->column-1];
-      if(diagLeft->piece != nullptr)
-          markBoxPosibility(boxSelected->row+1 , boxSelected->column-1);
 
-      Box * diagRight = this->boxes[boxSelected->row+1][boxSelected->column+1];
+     getBoxPosibility(box,box->row+1 , box->column,possibilities);
+      //Ataque del peon
+      Box * diagLeft = this->boxes[box->row+1][box->column-1];
+      if(diagLeft->piece != nullptr)
+         getBoxPosibility(box,box->row+1 , box->column-1,possibilities);
+
+
+      Box * diagRight = this->boxes[box->row+1][box->column+1];
       if(diagRight->piece != nullptr)
-          markBoxPosibility(boxSelected->row+1 , boxSelected->column+1);
+         getBoxPosibility(box,box->row+1 , box->column+1,possibilities);
 
       //Captura al paso
-      if(boxSelected->row == 4)//Fila nro 5
+      /*
+      if(box->row == 4)//Fila nro 5
       {
-          Box * right = this->boxes[boxSelected->row][boxSelected->column+1];
+          Box * right = this->boxes[box->row][box->column+1];
           if(right->piece != nullptr && right->piece->getPiece().compare("pawn")==0 && right->piece->getColor().compare("black")==0)
           {
               Pawn * peon = static_cast<Pawn*>(right->piece);
               if(peon->vulnerableCapturaPaso)
-                markBoxPosibility(boxSelected->row+1 , boxSelected->column+1 , true);
+                getBoxPosibility(box->row+1 , box->column+1 , possibilities,true);
           }
-          Box * left = this->boxes[boxSelected->row][boxSelected->column-1];
+          Box * left = this->boxes[box->row][box->column-1];
           if(left->piece !=  nullptr && left->piece->getPiece().compare("pawn")==0 && right->piece->getColor().compare("black")==0)
           {
               Pawn * peon = static_cast<Pawn*>(left->piece);
               if(peon->vulnerableCapturaPaso)
-                markBoxPosibility(boxSelected->row+1 , boxSelected->column-1 , true);
+               getBoxPosibility(box->row+1 , box->column-1 ,possibilities, true);
           }
-      }
-      if(jugada == 1)
+
+      }*/
+      if(box->piece->move== 1)
       {
-        markBoxPosibility(boxSelected->row+2 , boxSelected->column);
+       getBoxPosibility(box,box->row+2 , box->column,possibilities);
+
       }
     }
     else
     {
-      markBoxPosibility(this->boxSelected->row-1 , boxSelected->column);
-      //Ataque del peon
-      Box * diagLeft = this->boxes[boxSelected->row-1][boxSelected->column-1];
-      if(diagLeft->piece != nullptr)
-          markBoxPosibility(boxSelected->row-1 , boxSelected->column-1);
+      getBoxPosibility(box,box->row-1 , box->column,possibilities);
 
-      Box * diagRight = this->boxes[boxSelected->row-1][boxSelected->column+1];
+      //Ataque del peon
+      Box * diagLeft = this->boxes[box->row-1][box->column-1];
+      if(diagLeft->piece != nullptr)
+          getBoxPosibility(box,box->row-1 , box->column-1,possibilities);
+
+      Box * diagRight = this->boxes[box->row-1][box->column+1];
       if(diagRight->piece != nullptr)
-          markBoxPosibility(boxSelected->row-1 , boxSelected->column+1);
+         getBoxPosibility(box,box->row-1 , box->column+1,possibilities);
 
       //Captura al paso
-      if(boxSelected->row == 3)//Fila nro 5 desde abajo
+     /* if(box->row == 3)//Fila nro 5 desde abajo
       {
-          Box * right = this->boxes[boxSelected->row][boxSelected->column+1];
+          Box * right = this->boxes[box->row][box->column+1];
           if(right->piece != nullptr && right->piece->getPiece().compare("pawn")==0 && right->piece->getColor().compare("white")==0)
           {
               Pawn * peon = static_cast<Pawn*>(right->piece);
               if(peon->vulnerableCapturaPaso)
-                markBoxPosibility(boxSelected->row-1 , boxSelected->column+1 , true);
+               getBoxPosibility(box->row-1 , box->column+1 ,possibilities, true);
           }
-          Box * left = this->boxes[boxSelected->row][boxSelected->column-1];
+          Box * left = this->boxes[box->row][box->column-1];
           if(left->piece !=  nullptr && left->piece->getPiece().compare("pawn")==0 && right->piece->getColor().compare("white")==0)
           {
               Pawn * peon = static_cast<Pawn*>(left->piece);
               if(peon->vulnerableCapturaPaso)
-                markBoxPosibility(boxSelected->row-1 , boxSelected->column-1 , true);
+                getBoxPosibility(box->row-1 , box->column-1 ,possibilities, true);
           }
-      }
-      if(jugada == 1)
+      }*/
+      if(box->piece->move == 1)
       {
-        markBoxPosibility(boxSelected->row-2 , boxSelected->column);
+       getBoxPosibility(box,box->row-2 , box->column,possibilities);
+
       }
     }
   }
-   if(pieza.compare("horse")==0)
+   if(box->piece->getPiece().compare("horse")==0)
    {
-         markBoxPosibility(this->boxSelected->row+2 , boxSelected->column+1);
-         markBoxPosibility(this->boxSelected->row+2 , boxSelected->column-1);
-         markBoxPosibility(this->boxSelected->row-2 , boxSelected->column+1);
-         markBoxPosibility(this->boxSelected->row-2 , boxSelected->column-1);
+         getBoxPosibility(box,box->row+2 , box->column+1,possibilities);
+         getBoxPosibility(box,box->row+2 , box->column-1,possibilities);
+         getBoxPosibility(box,box->row-2 , box->column+1,possibilities);
+         getBoxPosibility(box,box->row-2 , box->column-1,possibilities);
 
-         markBoxPosibility(this->boxSelected->row+1 , boxSelected->column+2);
-         markBoxPosibility(this->boxSelected->row+1 , boxSelected->column-2);
-         markBoxPosibility(this->boxSelected->row-1 , boxSelected->column+2);
-         markBoxPosibility(this->boxSelected->row-1 , boxSelected->column-2);
+         getBoxPosibility(box,box->row+1 , box->column+2,possibilities);
+         getBoxPosibility(box,box->row+1 , box->column-2,possibilities);
+         getBoxPosibility(box,box->row-1 , box->column+2,possibilities);
+         getBoxPosibility(box,box->row-1 , box->column-2,possibilities);
    }
-   if(pieza.compare("king")==0)
+   if(box->piece->getPiece().compare("king")==0)
    {
-       markBoxPosibility(this->boxSelected->row , boxSelected->column+1);
-       markBoxPosibility(this->boxSelected->row , boxSelected->column-1);
-       markBoxPosibility(this->boxSelected->row+1 , boxSelected->column);
-       markBoxPosibility(this->boxSelected->row-1 , boxSelected->column);
-       markBoxPosibility(this->boxSelected->row+1 , boxSelected->column+1);
-       markBoxPosibility(this->boxSelected->row+1 , boxSelected->column-1);
-       markBoxPosibility(this->boxSelected->row-1 , boxSelected->column+1);
-       markBoxPosibility(this->boxSelected->row-1 , boxSelected->column-1);
-
+      comprobeMoveKing(box->row , box->column+1,possibilities);
+       comprobeMoveKing(box->row , box->column-1,possibilities);
+      comprobeMoveKing(box->row+1 , box->column,possibilities);
+       comprobeMoveKing(box->row-1 , box->column,possibilities);
+       comprobeMoveKing(box->row+1 , box->column+1,possibilities);
+      comprobeMoveKing(box->row+1 , box->column-1,possibilities);
+      comprobeMoveKing(box->row-1 , box->column+1,possibilities);
+       comprobeMoveKing(box->row-1 , box->column-1,possibilities);
+       /*
        //Posiblidad de enroque
-       if(boxSelected->column>3&&boxSelected->column<6){
+       if(box->column>3&&box->column<6){
                //Posiblidad de enroque corto
-        if(boxes[boxSelected->row][boxSelected->column+1]->piece==nullptr && boxes[boxSelected->row][boxSelected->column+2]->piece==nullptr)
+        if(boxes[box->row][box->column+1]->piece==nullptr && boxes[box->row][box->column+2]->piece==nullptr)
         {
-           markCastling(boxSelected->row,boxSelected->column+3);
+           markCastling(box->row,box->column+3);
            castling=true;
         }
             //Posiblidad de enroque largo
-        if(boxes[boxSelected->row][boxSelected->column-1]->piece==nullptr && boxes[boxSelected->row][boxSelected->column-2]->piece==nullptr && boxes[boxSelected->row][boxSelected->column-3]->piece==nullptr)
+        if(boxes[box->row][box->column-1]->piece==nullptr && boxes[box->row][box->column-2]->piece==nullptr && boxes[box->row][box->column-3]->piece==nullptr)
         {
-           markCastling(boxSelected->row,boxSelected->column-4);
+           markCastling(box->row,box->column-4);
            castling=true;
         }
 
       }
+      */
 
    }
-   if(pieza.compare("bishop")==0||pieza.compare("queen")==0)
+   if(box->piece->getPiece().compare("bishop")==0||box->piece->getPiece().compare("queen")==0)
    {
        //Moviendonos en la diagonal inferior derecha
        for(int i=1;i<8;i++)
        {
-          if(boxSelected->column+i<8 &&boxSelected->row+i<8)
+          if(box->column+i<8 &&box->row+i<8)
           {
-              if(this->boxes[boxSelected->row+i][boxSelected->column+i]->piece!=nullptr)
+              if(this->boxes[box->row+i][box->column+i]->piece!=nullptr)
               {
-                markDanger(boxSelected->row+i,boxSelected->column+i);
+                getBoxPosibility(box,box->row+i,box->column+i,possibilities);
                   break;
               }
-               markBoxPosibility(boxSelected->row+i,boxSelected->column+i);
+               getBoxPosibility(box,box->row+i,box->column+i,possibilities);
           }
        }
         //Moviendonos en la diagonal inferior izquierda
        for(int i=1;i<8;i++)
        {
-           if(boxSelected->column-i>-1&&boxSelected->row+i<8)
+           if(box->column-i>-1&&box->row+i<8)
            {
-               if(this->boxes[boxSelected->row+i][boxSelected->column-i]->piece!=nullptr){
-                   markDanger(boxSelected->row+i,boxSelected->column-i);
+               if(this->boxes[box->row+i][box->column-i]->piece!=nullptr){
+                  getBoxPosibility(box,box->row+i,box->column-i,possibilities);
                     break;
                }
-               markBoxPosibility(boxSelected->row+i , boxSelected->column-i);
+              getBoxPosibility(box,box->row+i , box->column-i,possibilities);
            }
        }
         //Moviendonos en la diagonal superior derecha
        for(int i=1;i<8;i++)
        {
-           if(boxSelected->row-i>-1&&boxSelected->column+i<8)
+           if(box->row-i>-1&&box->column+i<8)
            {
-               if(this->boxes[boxSelected->row-i][boxSelected->column+i]->piece!=nullptr){
+               if(this->boxes[box->row-i][box->column+i]->piece!=nullptr){
 
-                   markDanger(boxSelected->row-i,boxSelected->column+i);
+                  getBoxPosibility(box,box->row-i,box->column+i,possibilities);
                    break;
                }
-                 markBoxPosibility(boxSelected->row-i ,boxSelected->column+i);
+                getBoxPosibility(box,box->row-i ,box->column+i,possibilities);
            }
        }
        //Moviendonos en la diagonal superior izquierda
        for(int i=1;i<8;i++)
        {
-           if(boxSelected->row-i>-1&&boxSelected->column-i>-1)
+           if(box->row-i>-1&&box->column-i>-1)
            {
-               if(this->boxes[boxSelected->row-i][boxSelected->column-i]->piece!=nullptr)
+               if(this->boxes[box->row-i][box->column-i]->piece!=nullptr)
                {
-                   markDanger(boxSelected->row-i,boxSelected->column-i);
+                   getBoxPosibility(box,box->row-i,box->column-i,possibilities);
                      break;
                }
-              markBoxPosibility(boxSelected->row-i ,boxSelected->column-i);
+              getBoxPosibility(box,box->row-i ,box->column-i,possibilities);
            }
        }
    }
-   if(pieza.compare("tower")==0||pieza.compare("queen")==0)
+   if(box->piece->getPiece().compare("tower")==0||box->piece->getPiece().compare("queen")==0)
    {
        //Moviendonos en la  misma columna hacia arriba
        for(int i=1;i<8;i++)
        {
-           if(boxSelected->row+i<8)
+           if(box->row+i<8)
            {
-               if(this->boxes[boxSelected->row+i][boxSelected->column]->piece!=nullptr){
-                   markDanger(boxSelected->row+i,boxSelected->column);
+               if(this->boxes[box->row+i][box->column]->piece!=nullptr){
+                   getBoxPosibility(box,box->row+i,box->column,possibilities);
                    break;
                }
-               markBoxPosibility(boxSelected->row+i ,boxSelected->column);
+               getBoxPosibility(box,box->row+i ,box->column,possibilities);
            }
        }
         //Moviendonos en la  misma columna hacia abajo
        for(int i=1;i<8;i++)
        {
-           if(boxSelected->row-i>-1)
+           if(box->row-i>-1)
            {
-               if(this->boxes[boxSelected->row-i][boxSelected->column]->piece!=nullptr)
+               if(this->boxes[box->row-i][box->column]->piece!=nullptr)
                {
-                   markDanger(boxSelected->row-i,boxSelected->column);
+                   getBoxPosibility(box,box->row-i,box->column,possibilities);
                     break;
                }
-              markBoxPosibility(boxSelected->row-i ,boxSelected->column);
+              getBoxPosibility(box,box->row-i ,box->column,possibilities);
            }
        }
        //Moviendonos en la  misma fila hacia arriba
        for(int i=1;i<8;i++)
        {
-           if(boxSelected->column+i<8)
+           if(box->column+i<8)
            {
-               if(this->boxes[boxSelected->row][boxSelected->column+i]->piece!=nullptr)
+               if(this->boxes[box->row][box->column+i]->piece!=nullptr)
                {
                     //Posiblidad de enroque largo
-                   if((pieza.compare("tower")==0)&&i==4)
+                   if((box->piece->getPiece().compare("tower")==0)&&i==4)
                    {
                        castling=true;
-                       markCastling(boxSelected->row,boxSelected->column+i);
+                       markCastling(box->row,box->column+i);
                    }
-                   markDanger(boxSelected->row,boxSelected->column+i);
+                   getBoxPosibility(box,box->row,box->column+i,possibilities);
                      break;
                }
-              markBoxPosibility(boxSelected->row,boxSelected->column+i);
+              getBoxPosibility(box,box->row,box->column+i,possibilities);
            }
        }
          //Moviendonos en la  misma fila hacia abajo
        for(int i=1;i<8;i++)
        {
-           if(boxSelected->column-i>-1)
+           if(box->column-i>-1)
            {
-               if(this->boxes[boxSelected->row][boxSelected->column-i]->piece!=nullptr)
+               if(this->boxes[box->row][box->column-i]->piece!=nullptr)
                {
                    //Posiblidad de enrroque corto
-                   if((pieza.compare("tower")==0)&&i==3)
+                   if((box->piece->getPiece().compare("tower")==0)&&i==3)
                    {
                        castling=true;
-                       markCastling(boxSelected->row,boxSelected->column-i);
+                       markCastling(box->row,box->column-i);
 
                    }
-                   markDanger(boxSelected->row,boxSelected->column-i);
+                   getBoxPosibility(box,box->row,box->column-i,possibilities);
                    break;
                }
-               markBoxPosibility(boxSelected->row,boxSelected->column-i);
+               getBoxPosibility(box,box->row,box->column-i,possibilities);
            }
        }
 
    }
+   return possibilities;
 }
 void Board::selectBox(Box * box)
 {
@@ -404,21 +444,33 @@ void Board::selectBox(Box * box)
     if((box->piece->color.compare("white")==0&&turn==0)||(box->piece->color.compare("black")==0&&turn==1))
     {
       this->boxSelected = box;
-      std::string pieza = box->piece->getPiece();
-      showPosibilities(pieza ,  boxSelected->piece->move);
+      //std::string pieza = box->piece->getPiece();
+      if(jaque)
+      {
+
+      }
+      else
+      {
+          std::vector<Box*> tmp=getPosibilities(boxSelected);
+          for(size_t i=0;i<tmp.size();i++)
+          {
+            std::cout<<tmp[i]->row<<","<<tmp[i]->column<<std::endl;
+          }
+          std::cout<<tmp.size()<<"----------------"<<std::endl;
+           showPossibilities(tmp);
+      }
     }
   }
 }
 void Board::moveBox(Box * otherBox)
 {
   //Si el box seleccionado no es el mismo y tampoco esta libre
+
   if(otherBox != this->boxSelected && otherBox->libre)
   {
-    boxSelected->piece->move++;
-    //Actualizamos los punteros de las piezas
-
     if(castling)
     {
+
         if(otherBox->piece->getPiece().compare("king")==0)
         {
             if(boxSelected->column==7){
@@ -449,12 +501,37 @@ void Board::moveBox(Box * otherBox)
 
     else
     {
+       //Actualizamos el numero de movimientos
+        boxSelected->piece->move++;
+        //Actualizamos la posicion de las ficha a la casilla movida
+        boxSelected->piece->row=otherBox->row;
+        boxSelected->piece->column=otherBox->column;
+         //Actualizamos los punteros de las piezas
+        if(otherBox->piece!=nullptr)
+        {
+            removePiece(otherBox->piece);
+        }
         otherBox->piece = boxSelected->piece;
 
-        //Mostramo los iconos de las piezas
+        //std::cout<<"Posicion de la ficha seleccionada: "<<otherBox->piece->row<<","<<otherBox->piece->column<<std::endl;
+        //std::cout<<"Posicion de la ficha: "<<otherBox->piece->row<<","<<otherBox->piece->column<<std::endl;
+
+
+
+        //
+        //boxSelected=otherBox;
+        //std::cout<<"Pieza: "<<boxSelected->piece->getPiece()<<"Fila: "<<boxSelected->row<<"Columna: "<<boxSelected->column<<std::endl;
+        //Mostramos los iconos de las piezas
         otherBox->setIcon(QIcon(otherBox->piece->imagen));
         this->boxSelected->setIcon(QIcon());
         otherBox->setIconSize(QSize(50,50));
+        //Verificamos si el lugar donde cayo ameza la pisicion del rey enemigo
+        std::vector<Box*> tmp=getPosibilities(otherBox);
+        jaqueVerification(tmp);
+        if(jaque)
+        {
+            DeathRoad=tmp;
+        }
 
 
 
@@ -465,12 +542,7 @@ void Board::moveBox(Box * otherBox)
             Pawn * peon = static_cast<Pawn*>(otherBox->piece);
             peon->vulnerableCapturaPaso = true;
         }
-
-
     }
-
-
-
     this->boxSelected = nullptr;
 
     //Recargamos las celdas a su estado original
@@ -486,6 +558,7 @@ void Board::moveBox(Box * otherBox)
     bloquearCeldas();
     this->boxSelected = nullptr;
   }
+  //possibilities.clear();
 }
 void Board::Castling(Box * otherBox,int variant)
 {
@@ -543,5 +616,117 @@ Box* Board::getBoxSelected()
 {
   return this->boxSelected;
 }
+void Board::showPossibilities(std::vector<Box*> possibilities)
+{
+    for(std::size_t i=0;i<possibilities.size();i++)
+    {
 
+        if(possibilities[i]->piece!=nullptr)
+        {
+
+            possibilities[i]->markDangerBox();
+        }
+        else
+        {
+
+            possibilities[i]->markBox();
+        }
+        possibilities[i]->libre=true;
+    }
+    possibilities.clear();
+}
+void Board::jaqueVerification(std::vector<Box*> possibilities)
+{
+    for(std::size_t i=0;i<possibilities.size();i++)
+    {
+        if(possibilities[i]->piece!=nullptr)
+        {
+           if(possibilities[i]->piece->getPiece().compare("king")==0)
+           {
+               jaque=true;
+               QMessageBox msgBox;
+               std::string msg;
+               if(turn==0)
+               {
+                    msgBox.setText("Jaque a las blancas");
+               }
+               else
+               {
+                   msgBox.setText("Jaque a las negras");
+               }
+
+
+               msgBox.setStandardButtons(QMessageBox::Ok);
+               msgBox.exec();
+           }
+        }
+
+    }
+
+}
+void Board::removePiece(Piece *piece)
+{
+    if(turn==0)
+    {
+        for(size_t i=0;i<blackPieces.size();i++)
+        {
+
+            if(piece->row==blackPieces[i]->row&&piece->column==blackPieces[i]->column)
+            {
+                blackPieces.erase(blackPieces.begin() + i, blackPieces.begin() + (i+1));
+                return;
+            }
+        }
+    }
+    else
+    {
+        for(size_t i=0;i<whitePieces.size();i++)
+        {
+            if(piece->row==whitePieces[i]->row&&piece->column==whitePieces[i]->column)
+            {
+               whitePieces.erase(whitePieces.begin() + i, whitePieces.begin() + (i+1));
+                return;
+            }
+        }
+
+    }
+}
+void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
+{
+
+    if(turn==0)
+    {
+        for(size_t i=0;i<blackPieces.size();i++)
+        {
+            std::vector<Box*> tmp=getPosibilities(boxes[blackPieces[i]->row][blackPieces[i]->column]);
+              std::cout<<blackPieces[i]->getPiece()<<" pisibilidades:"<<tmp.size()<<std::endl;
+            for(size_t j=0;j<tmp.size();j++)
+            {
+                 std::cout<<tmp[j]->row<<","<<tmp[j]->column<<std::endl;
+                if(row==tmp[j]->row&&tmp[j]->column==col)
+                {
+                    std::cout<<"Se elimino una posibilidad"<<std::endl;
+                    return;
+                }
+            }
+        }
+    }
+    else
+    {
+        for(size_t i=0;i<whitePieces.size();i++)
+        {
+            std::vector<Box*> tmp=getPosibilities(boxes[whitePieces[i]->row][whitePieces[i]->column]);
+            for(size_t j=0;j<tmp.size();j++)
+            {
+                if(row==tmp[j]->row&&tmp[j]->column==col)
+                {
+                    return;
+                }
+
+            }
+        }
+    }
+    getBoxPosibility(boxSelected,row,col,possibilities);
+
+}
 
