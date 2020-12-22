@@ -457,7 +457,7 @@ void Board::selectBox(Box * box)
        std::vector<Box*> tmp=getPosibilities(boxSelected);
       if(jaque)
       {
-         showPossibilities(outJaquePossibilities(tmp));
+         showPossibilities(outJaquePossibilities(boxSelected,tmp));
       }
       else
       {
@@ -738,6 +738,27 @@ void Board::generateDeathRoad(Box* attacker, Box* king)
 
      }
 }
+bool Board::comprobeJaqueMate()
+{
+    std::cout<<"---------Comrpobacion de jaque mate---------"<<std::endl;
+    if(turn==0)
+    {
+        for(size_t i=0;i<blackPieces.size();i++)
+        {
+            std::vector<Box*> tmp=getPosibilities(boxes[blackPieces[i]->row][blackPieces[i]->column]);
+            std::cout<<blackPieces[i]->getPiece()<<" Posibilities:"<<tmp.size()<<std::endl;
+        }
+    }
+    else
+    {
+        for(size_t i=0;i<whitePieces.size();i++)
+        {
+            std::vector<Box*> tmp=getPosibilities(boxes[whitePieces[i]->row][whitePieces[i]->column]);
+            std::cout<<whitePieces[i]->getPiece()<<" Posibilities:"<<tmp.size()<<std::endl;
+        }
+    }
+    return true;
+}
 void Board::jaqueVerification(Box* attacker)
 {
     std::vector<Box*> possibilities=getPosibilities(attacker);
@@ -747,33 +768,67 @@ void Board::jaqueVerification(Box* attacker)
         {
            if(possibilities[i]->piece->getPiece().compare("king")==0)
            {
-               jaque=true;
-               QMessageBox msgBox;
-               std::string msg;
-               if(turn==0)
-               {
-                    msgBox.setText("Jaque a las blancas");
-               }
-               else
-               {
-                   msgBox.setText("Jaque a las negras");
-               }
-
-
-               msgBox.setStandardButtons(QMessageBox::Ok);
-               msgBox.exec();
                generateDeathRoad(attacker,possibilities[i]);
+               jaque=true;
                std::cout<<"-------------Camino de la muerte------------"<<std::endl;
                for(size_t i=0;i<DeathRoad.size();i++)
                {
                    std::cout<<DeathRoad[i]->row<<","<<DeathRoad[i]->column<<std::endl;
                }
+                std::cout<<"------------------------------------------"<<std::endl;
+                comprobeJaqueMate();
+               QMessageBox msgBox;
+               std::string msg;
+               if(turn==0)
+               {
+                    msgBox.setText("Jaque a las negras");
+               }
+               else
+               {
+                   msgBox.setText("Jaque a las blancas");
+               }
+
+
+               msgBox.setStandardButtons(QMessageBox::Ok);
+               msgBox.exec();
+
+
            }
         }
 
     }
 
 }
+std::vector<Box*> Board::outJaquePossibilities(Box* box,std::vector<Box*>  &possibilities)
+{
+    std::vector<Box*> tmp;
+    for(size_t i=0;i<DeathRoad.size();i++)
+    {
+        for(size_t j=0;j<possibilities.size();j++)
+        {
+            if(box->piece->getPiece().compare("king")==0)
+            {
+                if(DeathRoad[i]!=possibilities[j])
+                {
+                    tmp.push_back(possibilities[j]);
+                }
+                if(DeathRoad.size()==1)
+                {
+                    tmp.push_back(DeathRoad[0]);
+                }
+            }
+            else
+            {
+                if(DeathRoad[i]==possibilities[j])
+                {
+                    tmp.push_back(possibilities[j]);
+                }
+            }
+        }
+    }
+    return tmp;
+}
+
 void Board::removePiece(Piece *piece)
 {
     if(turn==0)
@@ -841,33 +896,5 @@ void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
     getBoxPosibility(boxSelected,row,col,possibilities);
 
 }
-std::vector<Box*> Board::outJaquePossibilities(std::vector<Box*>  &possibilities)
-{
-    std::vector<Box*> tmp;
-    for(size_t i=0;i<DeathRoad.size();i++)
-    {
-        for(size_t j=0;j<possibilities.size();j++)
-        {
-            if(boxSelected->piece->getPiece().compare("king")==0)
-            {
-                if(DeathRoad[i]!=possibilities[j])
-                {
-                    tmp.push_back(possibilities[j]);
-                }
-                if(DeathRoad.size()==1)
-                {
-                    tmp.push_back(DeathRoad[0]);
-                }
-            }
-            else
-            {
-                if(DeathRoad[i]==possibilities[j])
-                {
-                    tmp.push_back(possibilities[j]);
-                }
-            }
-        }
-    }
-    return tmp;
-}
+
 

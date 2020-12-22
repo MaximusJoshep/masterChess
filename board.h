@@ -36,7 +36,8 @@ public:
     void removePiece(Piece* piece);
     void comprobeMoveKing(int row,int col,std::vector<Box*> &possibilities);
     void generateDeathRoad(Box* attacker, Box* king);
-    std::vector<Box*> outJaquePossibilities(std::vector<Box*>  &possibilities);
+    std::vector<Box*> outJaquePossibilities(Box* box,std::vector<Box*>  &possibilities);
+    bool comprobeJaqueMate();
 
 
 
