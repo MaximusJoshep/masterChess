@@ -34,12 +34,11 @@ public:
     void showPossibilities(std::vector<Box*> possibilities);
     void jaqueVerification(std::vector<Box*> possibilities);
     void removePiece(Piece* piece);
-    void comprobeMoveKing(int row,int col,std::vector<Box*> &possibilities);
+    void verificarCapturaPeon(Box* box , Box* otherBox);
+    void comprobeMoveKing(Box* box,int row,int col,std::vector<Box*> &possibilities);
     void generateDeathRoad(Box* attacker, Box* king);
     std::vector<Box*> outJaquePossibilities(Box* box,std::vector<Box*>  &possibilities);
-    bool comprobeJaqueMate();
-    void verificarCapturaPeon(Box* box , Box* otherBox);
-
+    bool comprobeJaqueMate(Box* king);
     //En este metodo llenaremos el vector con las casillas de
 
 

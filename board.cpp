@@ -317,14 +317,14 @@ std::vector<Box*> Board::getPosibilities(Box* box)
    }
     if(box->piece->getPiece().compare("king")==0)
    {
-      comprobeMoveKing(box->row , box->column+1,possibilities);
-       comprobeMoveKing(box->row , box->column-1,possibilities);
-      comprobeMoveKing(box->row+1 , box->column,possibilities);
-       comprobeMoveKing(box->row-1 , box->column,possibilities);
-       comprobeMoveKing(box->row+1 , box->column+1,possibilities);
-      comprobeMoveKing(box->row+1 , box->column-1,possibilities);
-      comprobeMoveKing(box->row-1 , box->column+1,possibilities);
-       comprobeMoveKing(box->row-1 , box->column-1,possibilities);
+      comprobeMoveKing(box,box->row , box->column+1,possibilities);
+       comprobeMoveKing(box,box->row , box->column-1,possibilities);
+      comprobeMoveKing(box,box->row+1 , box->column,possibilities);
+       comprobeMoveKing(box,box->row-1 , box->column,possibilities);
+       comprobeMoveKing(box,box->row+1 , box->column+1,possibilities);
+      comprobeMoveKing(box,box->row+1 , box->column-1,possibilities);
+      comprobeMoveKing(box,box->row-1 , box->column+1,possibilities);
+       comprobeMoveKing(box,box->row-1 , box->column-1,possibilities);
        /*
        //Posiblidad de enroque
        if(box->column>3&&box->column<6){
@@ -673,6 +673,7 @@ void Board::showPossibilities(std::vector<Box*> possibilities)
 }
 void Board::jaqueVerification(std::vector<Box*> possibilities)
 {
+
     if(attacker->piece->getPiece().compare("pawn")==0||attacker->piece->getPiece().compare("horse")==0)
     {
        DeathRoad.push_back(attacker);
@@ -771,23 +772,37 @@ void Board::jaqueVerification(std::vector<Box*> possibilities)
 
      }
 }
-bool Board::comprobeJaqueMate()
+bool Board::comprobeJaqueMate(Box* king)
 {
     std::cout<<"---------Comrpobacion de jaque mate---------"<<std::endl;
+
     if(turn==0)
     {
+        std::vector<Box*> l=getPosibilities(king);
+        std::cout<<king->piece->getPiece()<<" Posi:"<<l.size()<<std::endl;
+
         for(size_t i=0;i<blackPieces.size();i++)
         {
             std::vector<Box*> tmp=getPosibilities(boxes[blackPieces[i]->row][blackPieces[i]->column]);
-            std::cout<<blackPieces[i]->getPiece()<<" Posibilities:"<<tmp.size()<<std::endl;
+            std::vector<Box*> tmq=outJaquePossibilities( boxes[blackPieces[i]->row][blackPieces[i]->column],tmp);
+            if(tmq.size()!=0)
+            {
+                return false;
+            }
+
         }
     }
     else
     {
         for(size_t i=0;i<whitePieces.size();i++)
         {
-            std::vector<Box*> tmp=getPosibilities(boxes[whitePieces[i]->row][whitePieces[i]->column]);
-            std::cout<<whitePieces[i]->getPiece()<<" Posibilities:"<<tmp.size()<<std::endl;
+            std::vector<Box*> tmp=getPosibilities(boxes[blackPieces[i]->row][blackPieces[i]->column]);
+            std::vector<Box*> tmq=outJaquePossibilities( boxes[blackPieces[i]->row][blackPieces[i]->column],tmp);
+            if(tmq.size()!=0)
+            {
+                return false;
+            }
+
         }
     }
     return true;
@@ -803,13 +818,14 @@ void Board::jaqueVerification(Box* attacker)
            {
                generateDeathRoad(attacker,possibilities[i]);
                jaque=true;
+
                std::cout<<"-------------Camino de la muerte------------"<<std::endl;
                for(size_t i=0;i<DeathRoad.size();i++)
                {
                    std::cout<<DeathRoad[i]->row<<","<<DeathRoad[i]->column<<std::endl;
                }
                 std::cout<<"------------------------------------------"<<std::endl;
-                comprobeJaqueMate();
+                comprobeJaqueMate(possibilities[i]);
                QMessageBox msgBox;
                std::string msg;
                if(turn==0)
@@ -887,10 +903,10 @@ void Board::removePiece(Piece *piece)
 
     }
 }
-void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
+void Board::comprobeMoveKing(Box* box,int row, int col,std::vector<Box*> &possibilities)
 {
-
-    if(turn==0)
+    std::cout<<"............................"<<std::endl;
+    if(box->piece->getColor().compare("white")==0)
     {
         for(size_t i=0;i<blackPieces.size();i++)
         {
