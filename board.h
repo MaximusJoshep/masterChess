@@ -32,27 +32,18 @@ public:
     void markCastling(int row , int col);
     void Castling(Box * otherBox,int variant);
     void showPossibilities(std::vector<Box*> possibilities);
-    void jaqueVerification(Box* attacker);
+    void jaqueVerification(std::vector<Box*> possibilities);
     void removePiece(Piece* piece);
     void comprobeMoveKing(int row,int col,std::vector<Box*> &possibilities);
-<<<<<<< HEAD
     void verificarCapturaPeon(Box* box , Box* otherBox);
-=======
-    void generateDeathRoad(Box* attacker, Box* king);
-    std::vector<Box*> outJaquePossibilities(std::vector<Box*>  &possibilities);
-
-
-
->>>>>>> cee2930ec8ee391432250ff1d3ba8c5a08658edc
     //En este metodo llenaremos el vector con las casillas de
 
 
 private:
     Ui::Board *ui;
     Box * boxes[8][8];
-    int turn=0;
+    int turn=1;
     Box * boxSelected = nullptr;
-    Piece * attackingPiece;
 
     std::vector<Box*> DeathRoad;
 
