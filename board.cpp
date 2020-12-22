@@ -304,7 +304,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
         }
     }
     if(box->piece->getPiece().compare("horse")==0)
-   {
+    {
          getBoxPosibility(box,box->row+2 , box->column+1,possibilities);
          getBoxPosibility(box,box->row+2 , box->column-1,possibilities);
          getBoxPosibility(box,box->row-2 , box->column+1,possibilities);
@@ -479,7 +479,7 @@ void Board::selectBox(Box * box)
       //std::string pieza = box->piece->getPiece();
       if(jaque)
       {
-
+         showPossibilities(outJaquePossibilities(boxSelected,tmp));
       }
       else
       {
@@ -673,8 +673,7 @@ void Board::showPossibilities(std::vector<Box*> possibilities)
 }
 void Board::jaqueVerification(std::vector<Box*> possibilities)
 {
-<<<<<<< Updated upstream
-=======
+
     if(attacker->piece->getPiece().compare("pawn")==0||attacker->piece->getPiece().compare("horse")==0)
     {
        DeathRoad.push_back(attacker);
@@ -811,16 +810,15 @@ bool Board::comprobeJaqueMate(Box* king)
 void Board::jaqueVerification(Box* attacker)
 {
     std::vector<Box*> possibilities=getPosibilities(attacker);
->>>>>>> Stashed changes
     for(std::size_t i=0;i<possibilities.size();i++)
     {
         if(possibilities[i]->piece!=nullptr)
         {
            if(possibilities[i]->piece->getPiece().compare("king")==0)
            {
+               generateDeathRoad(attacker,possibilities[i]);
                jaque=true;
-<<<<<<< Updated upstream
-=======
+
                std::cout<<"-------------Camino de la muerte------------"<<std::endl;
                for(size_t i=0;i<DeathRoad.size();i++)
                {
@@ -828,16 +826,15 @@ void Board::jaqueVerification(Box* attacker)
                }
                 std::cout<<"------------------------------------------"<<std::endl;
                 comprobeJaqueMate(possibilities[i]);
->>>>>>> Stashed changes
                QMessageBox msgBox;
                std::string msg;
                if(turn==0)
                {
-                    msgBox.setText("Jaque a las blancas");
+                    msgBox.setText("Jaque a las negras");
                }
                else
                {
-                   msgBox.setText("Jaque a las negras");
+                   msgBox.setText("Jaque a las blancas");
                }
 
 
@@ -849,6 +846,36 @@ void Board::jaqueVerification(Box* attacker)
     }
 
 }
+std::vector<Box*> Board::outJaquePossibilities(Box* box,std::vector<Box*>  &possibilities)
+{
+    std::vector<Box*> tmp;
+    for(size_t i=0;i<DeathRoad.size();i++)
+    {
+        for(size_t j=0;j<possibilities.size();j++)
+        {
+            if(box->piece->getPiece().compare("king")==0)
+            {
+                if(DeathRoad[i]!=possibilities[j])
+                {
+                    tmp.push_back(possibilities[j]);
+                }
+                if(DeathRoad.size()==1)
+                {
+                    tmp.push_back(DeathRoad[0]);
+                }
+            }
+            else
+            {
+                if(DeathRoad[i]==possibilities[j])
+                {
+                    tmp.push_back(possibilities[j]);
+                }
+            }
+        }
+    }
+    return tmp;
+}
+
 void Board::removePiece(Piece *piece)
 {
     if(turn==0)
@@ -878,13 +905,8 @@ void Board::removePiece(Piece *piece)
 }
 void Board::comprobeMoveKing(Box* box,int row, int col,std::vector<Box*> &possibilities)
 {
-<<<<<<< Updated upstream
-
-    if(turn==0)
-=======
-  std::cout<<"............................"<<std::endl;
+    std::cout<<"............................"<<std::endl;
     if(box->piece->getColor().compare("white")==0)
->>>>>>> Stashed changes
     {
         for(size_t i=0;i<blackPieces.size();i++)
         {
