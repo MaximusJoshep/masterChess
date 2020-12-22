@@ -325,7 +325,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
       comprobeMoveKing(box,box->row+1 , box->column-1,possibilities);
       comprobeMoveKing(box,box->row-1 , box->column+1,possibilities);
        comprobeMoveKing(box,box->row-1 , box->column-1,possibilities);
-       /*
+
        //Posiblidad de enroque
        if(box->column>3&&box->column<6){
                //Posiblidad de enroque corto
@@ -342,7 +342,6 @@ std::vector<Box*> Board::getPosibilities(Box* box)
         }
 
       }
-      */
 
    }
     if(box->piece->getPiece().compare("bishop")==0||box->piece->getPiece().compare("queen")==0)
@@ -477,6 +476,7 @@ void Board::selectBox(Box * box)
     {
       this->boxSelected = box;
       //std::string pieza = box->piece->getPiece();
+        std::vector<Box*> tmp=getPosibilities(boxSelected);
       if(jaque)
       {
          showPossibilities(outJaquePossibilities(boxSelected,tmp));
@@ -499,6 +499,7 @@ void Board::moveBox(Box * otherBox)
   //Si el box seleccionado no es el mismo y tampoco esta libre
   if(otherBox != this->boxSelected && otherBox->libre)
   {
+    registrarMovimiento(getCandena(boxSelected->row , boxSelected->column)+" - "+getCandena(otherBox->row,otherBox->column));
     if(castling)
     {
         if(otherBox->piece->getPiece().compare("king")==0)
@@ -557,7 +558,7 @@ void Board::moveBox(Box * otherBox)
         otherBox->setIconSize(QSize(50,50));
         //Verificamos si el lugar donde cayo ameza la pisicion del rey enemigo
         std::vector<Box*> tmp=getPosibilities(otherBox);
-        jaqueVerification(tmp);
+        jaqueVerification(otherBox);
         if(jaque)
         {
             DeathRoad=tmp;
@@ -578,6 +579,13 @@ void Board::moveBox(Box * otherBox)
             else
                 peon->vulnerableCapturaPaso = false;
         }
+        if(otherBox->piece->getPiece().compare("pawn")==0 && (otherBox->row == 0 || otherBox->row == 7))
+        {
+
+            MainWindow * qmw = static_cast<MainWindow*>(this->parent()->parent());
+            qmw->showPiecePromoteOptions(otherBox);
+        }
+
     }
     this->boxSelected = nullptr;
 
@@ -671,7 +679,7 @@ void Board::showPossibilities(std::vector<Box*> possibilities)
     }
     possibilities.clear();
 }
-void Board::jaqueVerification(std::vector<Box*> possibilities)
+void Board::generateDeathRoad(Box* attacker, Box* king)
 {
 
     if(attacker->piece->getPiece().compare("pawn")==0||attacker->piece->getPiece().compare("horse")==0)
@@ -878,6 +886,7 @@ std::vector<Box*> Board::outJaquePossibilities(Box* box,std::vector<Box*>  &poss
 
 void Board::removePiece(Piece *piece)
 {
+    addPiezaEliminada(piece);
     if(turn==0)
     {
         for(size_t i=0;i<blackPieces.size();i++)
@@ -953,6 +962,8 @@ void Board::verificarCapturaPeon(Box* box, Box* otherBox)
         if(box->row == 4 && otherBox->row == 5)
         {
             std::cout<<"Hay captura de pieza"<<std::endl;
+
+            removePiece(this->boxes[box->row][otherBox->column]->piece);
             this->boxes[box->row][otherBox->column]->piece = nullptr;
             this->boxes[box->row][otherBox->column]->setIcon(QIcon());
         }
@@ -960,6 +971,7 @@ void Board::verificarCapturaPeon(Box* box, Box* otherBox)
         else if(box->row == 3 && otherBox->row == 2)
         {
             std::cout<<"Hay captura pieza"<<std::endl;
+            removePiece(this->boxes[box->row][otherBox->column]->piece);
             this->boxes[box->row][otherBox->column]->piece = nullptr;
             this->boxes[box->row][otherBox->column]->setIcon(QIcon());
         }
@@ -969,4 +981,33 @@ void Board::verificarCapturaPeon(Box* box, Box* otherBox)
         }
     }
   }
+}
+
+
+
+void Board::addPiezaEliminada(Piece * piece)
+{
+    MainWindow * qmw = static_cast<MainWindow*>(this->parent()->parent());
+    qmw->addPiezaEliminada(piece);
+}
+void Board::registrarMovimiento(std::string cadena)
+{
+    MainWindow * qmw = static_cast<MainWindow*>(this->parent()->parent());
+    qmw->registrarMovimiento(cadena);
+}
+std::string Board::getCandena(int row , int col)
+{
+    std::string cadena = "";
+    switch(col){
+        case(0):cadena+='A';break;
+        case(1):cadena+='B';break;
+        case(2):cadena+='C';break;
+        case(3):cadena+='D';break;
+        case(4):cadena+='E';break;
+        case(5):cadena+='F';break;
+        case(6):cadena+='G';break;
+        case(7):cadena+='H';break;
+    }
+    cadena += std::to_string(row+1);
+    return cadena;
 }

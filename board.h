@@ -7,6 +7,7 @@
 #include <piece.h>
 #include <cstring>
 #include <string>
+#include "mainwindow.h"
 
 namespace Ui {
   class Board;
@@ -32,7 +33,7 @@ public:
     void markCastling(int row , int col);
     void Castling(Box * otherBox,int variant);
     void showPossibilities(std::vector<Box*> possibilities);
-    void jaqueVerification(std::vector<Box*> possibilities);
+    void jaqueVerification(Box* attacker);
     void removePiece(Piece* piece);
     void verificarCapturaPeon(Box* box , Box* otherBox);
     void comprobeMoveKing(Box* box,int row,int col,std::vector<Box*> &possibilities);
@@ -41,7 +42,9 @@ public:
     bool comprobeJaqueMate(Box* king);
     //En este metodo llenaremos el vector con las casillas de
 
-
+    void addPiezaEliminada(Piece * pieza);
+    void registrarMovimiento(std::string cadena);
+    std::string getCandena(int row , int col);
 private:
     Ui::Board *ui;
     Box * boxes[8][8];
