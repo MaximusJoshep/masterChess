@@ -31,7 +31,6 @@ void Box::boxClickHandler()
   Board * parent = static_cast<Board*>(this->parent());
   if(parent->getBoxSelected() == nullptr)
   {
-
       //seleccionamos la pieza
       parent->selectBox(this);
   }

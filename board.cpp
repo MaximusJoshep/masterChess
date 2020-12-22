@@ -111,10 +111,9 @@ void Board::draw_boxes()
      {
          for(int j=0;j<8;j++)
          {
-             if(j==4&&i==0){
-                   continue;
+             if(j!=4){
+                   whitePieces.push_back(this->boxes[i][j]->piece);
               }
-             whitePieces.push_back(this->boxes[i][j]->piece);
          }
      }
      //Llenamos el vector de las fichas negras
@@ -122,10 +121,9 @@ void Board::draw_boxes()
      {
          for(int j=0;j<8;j++)
          {
-             if(j==4&&i==7){
-                  continue;
+             if(j!=4){
+                   blackPieces.push_back(this->boxes[i][j]->piece);
               }
-              blackPieces.push_back(this->boxes[i][j]->piece);
          }
      }
 
@@ -145,53 +143,26 @@ void Board::markCastling(int row, int col)
         this->boxes[row][col]->libre = true;
     }
 }
-void Board:: getDangerPossibility(Box* box,int row , int col ,std::vector<Box*> &possibilities, bool captura)
+void Board::getDangerPossibility(Box* box,int row , int col ,std::vector<Box*> &possibilities)
 {
-   /* if(captura)
-    {
-      this->boxes[row][col]->markDangerBox();
-      this->boxes[row][col]->libre = true;
-        return;black
-    }*/
-    if((this->boxes[row][col]->piece->color.compare(box->piece->color)==0)&&box->piece==boxSelected->piece){
+    if(this->boxes[row][col]->piece->color.compare(box->piece->color)==0){
        return;
     }
-    if(box->piece->getPiece().compare("pawn")==0&&box->column==col)
-    {
-        return;
-    }
     possibilities.push_back(boxes[row][col]);
-    //this->boxes[row][col]->markDangerBox();
-    //this->boxes[row][col]->libre = true;
-
-
-
 }
-void Board::getBoxPosibility(Box* box,int row , int col,std::vector<Box*> &possibilities , bool captura)
+void Board::getBoxPosibility(Box* box,int row , int col,std::vector<Box*> &possibilities)
 {
   //Mientras no se salga del tablero
   if(row<0 || 7<row || col<0 || 7<col){
     return;
   }
-
   if(boxes[row][col]->piece!=nullptr)
   {
-    /*if(captura)
-    {
-     getDangerPossibility(row,col,possibilities,captura);
-      return;
-    }*/
-
-   getDangerPossibility(box,row,col,possibilities);
+    getDangerPossibility(box,row,col,possibilities);
   }
   else
   {
-
-     possibilities.push_back(boxes[row][col]);
-     //this->boxes[row][col]->libre = true;
-     //this->boxes[row][col]->markBox();
-
-
+    possibilities.push_back(boxes[row][col]);
   }
 }
 std::vector<Box*> Board::getPosibilities(Box* box)
@@ -344,7 +315,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
          getBoxPosibility(box,box->row-1 , box->column+2,possibilities);
          getBoxPosibility(box,box->row-1 , box->column-2,possibilities);
    }
-   if(box->piece->getPiece().compare("king")==0)
+    if(box->piece->getPiece().compare("king")==0)
    {
       comprobeMoveKing(box->row , box->column+1,possibilities);
        comprobeMoveKing(box->row , box->column-1,possibilities);
@@ -374,7 +345,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
       */
 
    }
-   if(box->piece->getPiece().compare("bishop")==0||box->piece->getPiece().compare("queen")==0)
+    if(box->piece->getPiece().compare("bishop")==0||box->piece->getPiece().compare("queen")==0)
    {
        //Moviendonos en la diagonal inferior derecha
        for(int i=1;i<8;i++)
@@ -428,7 +399,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
            }
        }
    }
-   if(box->piece->getPiece().compare("tower")==0||box->piece->getPiece().compare("queen")==0)
+    if(box->piece->getPiece().compare("tower")==0||box->piece->getPiece().compare("queen")==0)
    {
        //Moviendonos en la  misma columna hacia arriba
        for(int i=1;i<8;i++)
@@ -496,7 +467,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
        }
 
    }
-   return possibilities;
+    return possibilities;
 }
 void Board::selectBox(Box * box)
 {
@@ -506,14 +477,13 @@ void Board::selectBox(Box * box)
     {
       this->boxSelected = box;
       //std::string pieza = box->piece->getPiece();
-       std::vector<Box*> tmp=getPosibilities(boxSelected);
       if(jaque)
       {
          showPossibilities(outJaquePossibilities(boxSelected,tmp));
       }
       else
       {
-
+          std::vector<Box*> tmp=getPosibilities(boxSelected);
           for(size_t i=0;i<tmp.size();i++)
           {
             std::cout<<tmp[i]->row<<","<<tmp[i]->column<<std::endl;
@@ -527,12 +497,10 @@ void Board::selectBox(Box * box)
 void Board::moveBox(Box * otherBox)
 {
   //Si el box seleccionado no es el mismo y tampoco esta libre
-
   if(otherBox != this->boxSelected && otherBox->libre)
   {
     if(castling)
     {
-
         if(otherBox->piece->getPiece().compare("king")==0)
         {
             if(boxSelected->column==7){
@@ -542,7 +510,6 @@ void Board::moveBox(Box * otherBox)
             {
                Castling(otherBox,1);
             }
-
 
         }
        else if(otherBox->piece->getPiece().compare("tower")==0)
@@ -563,7 +530,7 @@ void Board::moveBox(Box * otherBox)
 
     else
     {
-       //Actualizamos el numero de movimientos
+        //Actualizamos el numero de movimientos
         boxSelected->piece->move++;
         verificarCapturaPeon(this->boxSelected , otherBox);
         //Actualizamos la posicion de las ficha a la casilla movida
@@ -576,17 +543,25 @@ void Board::moveBox(Box * otherBox)
         }
         otherBox->piece = boxSelected->piece;
 
+        //std::cout<<"Posicion de la ficha seleccionada: "<<otherBox->piece->row<<","<<otherBox->piece->column<<std::endl;
+        //std::cout<<"Posicion de la ficha: "<<otherBox->piece->row<<","<<otherBox->piece->column<<std::endl;
+
+
+
+        //
+        //boxSelected=otherBox;
+        //std::cout<<"Pieza: "<<boxSelected->piece->getPiece()<<"Fila: "<<boxSelected->row<<"Columna: "<<boxSelected->column<<std::endl;
         //Mostramos los iconos de las piezas
         otherBox->setIcon(QIcon(otherBox->piece->imagen));
         this->boxSelected->setIcon(QIcon());
         otherBox->setIconSize(QSize(50,50));
         //Verificamos si el lugar donde cayo ameza la pisicion del rey enemigo
+        std::vector<Box*> tmp=getPosibilities(otherBox);
+        jaqueVerification(tmp);
         if(jaque)
         {
-            jaque=false;
+            DeathRoad=tmp;
         }
-        jaqueVerification(otherBox);
-
 
 
 
@@ -696,8 +671,7 @@ void Board::showPossibilities(std::vector<Box*> possibilities)
     }
     possibilities.clear();
 }
-
-void Board::generateDeathRoad(Box* attacker, Box* king)
+void Board::jaqueVerification(std::vector<Box*> possibilities)
 {
     if(attacker->piece->getPiece().compare("pawn")==0||attacker->piece->getPiece().compare("horse")==0)
     {
@@ -850,8 +824,6 @@ void Board::jaqueVerification(Box* attacker)
 
                msgBox.setStandardButtons(QMessageBox::Ok);
                msgBox.exec();
-
-
            }
         }
 
@@ -917,7 +889,7 @@ void Board::removePiece(Piece *piece)
 }
 void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
 {
-  std::cout<<"............................"<<std::endl;
+
     if(turn==0)
     {
         for(size_t i=0;i<blackPieces.size();i++)
@@ -940,12 +912,10 @@ void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
         for(size_t i=0;i<whitePieces.size();i++)
         {
             std::vector<Box*> tmp=getPosibilities(boxes[whitePieces[i]->row][whitePieces[i]->column]);
-
             for(size_t j=0;j<tmp.size();j++)
             {
                 if(row==tmp[j]->row&&tmp[j]->column==col)
                 {
-
                     return;
                 }
 
@@ -955,7 +925,6 @@ void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
     getBoxPosibility(boxSelected,row,col,possibilities);
 
 }
-
 void Board::verificarCapturaPeon(Box* box, Box* otherBox)
 {
   //Si ambos son piezas "peones"
@@ -985,4 +954,3 @@ void Board::verificarCapturaPeon(Box* box, Box* otherBox)
     }
   }
 }
-

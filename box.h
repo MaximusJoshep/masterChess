@@ -28,22 +28,6 @@ public:
 
 public Q_SLOTS:
     void boxClickHandler();
-    friend bool operator== (const Box& a, const Box& b)
-        {
-              if(a.row==b.row&&a.column==b.column)
-              {
-                  return true;
-              }
-
-
-            return false;
-        }
-    friend bool operator!= (const Box& a, const Box& b)
-        {
-
-
-            return !(a==b);
-        }
 
 private:
 };
