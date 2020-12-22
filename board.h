@@ -38,6 +38,7 @@ public:
     void generateDeathRoad(Box* attacker, Box* king);
     std::vector<Box*> outJaquePossibilities(Box* box,std::vector<Box*>  &possibilities);
     bool comprobeJaqueMate();
+    void verificarCapturaPeon(Box* box , Box* otherBox);
 
 
 
@@ -47,7 +48,7 @@ public:
 private:
     Ui::Board *ui;
     Box * boxes[8][8];
-    int turn=0;
+    int turn=1;
     Box * boxSelected = nullptr;
     Piece * attackingPiece;
 

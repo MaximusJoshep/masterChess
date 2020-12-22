@@ -196,92 +196,144 @@ void Board::getBoxPosibility(Box* box,int row , int col,std::vector<Box*> &possi
 }
 std::vector<Box*> Board::getPosibilities(Box* box)
 {
-  std::vector<Box*> possibilities;
-  if(box->piece->getPiece().compare("pawn")==0)
-  {
-    if(box->piece->getColor().compare("white")==0)
+    std::vector<Box*> possibilities;
+    if(box->piece->getPiece().compare("pawn")==0)
     {
-        if(box->piece==boxSelected->piece){
-            getBoxPosibility(box,box->row+1 , box->column,possibilities);
+        if(box->piece->getColor().compare("white")==0)
+        {
+            //Movimiento
+            if(-1<box->row+1 && box->row+1<8 && boxes[box->row+1][box->column]->piece == nullptr)
+            {
+                getBoxPosibility(box,box->row+1 , box->column,possibilities);
+                if(-1<box->row+2 && box->row+2<8 && boxes[box->row+2][box->column]->piece==nullptr && box->piece->move==1)
+                    getBoxPosibility(box,box->row+2 , box->column,possibilities);
+            }
+            //Ataque normal
+            if(-1<box->row+1&&box->row+1<8)
+            {
+                if(-1<box->column-1&&box->column-1<8)
+                {
+                    Box * diagLeft = this->boxes[box->row+1][box->column-1];
+                    if(diagLeft->piece != nullptr)
+                    {
+                        getBoxPosibility(box,box->row+1 , box->column-1, possibilities);
+                    }
+                }
+                if(-1<box->column+1&&box->column+1<8)
+                {
+                    Box * diagRight = this->boxes[box->row+1][box->column+1];
+                    if(diagRight->piece != nullptr)
+                    {
+                        getBoxPosibility(box,box->row+1 , box->column+1, possibilities);
+                    }
+                }
+            }
+            //Captura al paso
+            if(box->row == 4 && box->piece->move == 3)
+            {
+                //Izquierda
+                if(-1<box->column-1 && box->column-1<8)
+                {
+                    Box * leftBox = this->boxes[box->row][box->column-1];
+                    if(leftBox->piece != nullptr && leftBox->piece->getPiece().compare("pawn") == 0)
+                    {
+                        Pawn * leftPawn = static_cast<Pawn*>(leftBox->piece);
+                        std::cout<<"Peon: Izquierdo "<<leftPawn->getPiece()<<std::endl;
+                        if(leftPawn->vulnerableCapturaPaso)
+                        {
+                            std::cout<<"Peon izquierdo vulnerable a captura"<<std::endl;
+                            getBoxPosibility(box , box->row+1 , box->column-1 , possibilities);
+                            this->boxes[box->row+1][box->column-1]->markDangerBox();
+                        }
+                    }
+                }
+                //Derecha
+                if(-1<box->column+1&&box->column+1<8)
+                {
+                    Box * rightBox = this->boxes[box->row][box->column+1];
+                    if(rightBox->piece != nullptr && rightBox->piece->getPiece().compare("pawn") == 0)
+                    {
+                        Pawn * rightPawn = static_cast<Pawn*>(rightBox->piece);
+                        std::cout<<"Peon: Derecho "<<rightPawn->getPiece()<<std::endl;
+                        if(rightPawn->vulnerableCapturaPaso)
+                        {
+                            std::cout<<"Peon derecho vulnerable a captura"<<std::endl;
+                            getBoxPosibility(box , box->row+1 , box->column+1 , possibilities);
+                            this->boxes[box->row+1][box->column+1]->markDangerBox();
+                        }
+                    }
+                }
+            }
         }
-      //Ataque del peon
-      Box * diagLeft = this->boxes[box->row+1][box->column-1];
-      if(diagLeft->piece != nullptr||box->piece!=boxSelected->piece)
-         getBoxPosibility(box,box->row+1 , box->column-1,possibilities);
-
-
-      Box * diagRight = this->boxes[box->row+1][box->column+1];
-      if(diagRight->piece != nullptr||box->piece!=boxSelected->piece)
-         getBoxPosibility(box,box->row+1 , box->column+1,possibilities);
-
-      //Captura al paso
-      /*
-      if(box->row == 4)//Fila nro 5
-      {
-          Box * right = this->boxes[box->row][box->column+1];
-          if(right->piece != nullptr && right->piece->getPiece().compare("pawn")==0 && right->piece->getColor().compare("black")==0)
-          {
-              Pawn * peon = static_cast<Pawn*>(right->piece);
-              if(peon->vulnerableCapturaPaso)
-                getBoxPosibility(box->row+1 , box->column+1 , possibilities,true);
-          }
-          Box * left = this->boxes[box->row][box->column-1];
-          if(left->piece !=  nullptr && left->piece->getPiece().compare("pawn")==0 && right->piece->getColor().compare("black")==0)
-          {
-              Pawn * peon = static_cast<Pawn*>(left->piece);
-              if(peon->vulnerableCapturaPaso)
-               getBoxPosibility(box->row+1 , box->column-1 ,possibilities, true);
-          }
-
-      }*/
-      if(box->piece->move== 1&&box->piece==boxSelected->piece)
-      {
-       getBoxPosibility(box,box->row+2 , box->column,possibilities);
-
-      }
+        else
+        {
+            //Movimiento
+            if(-1<box->row-1 && box->row-1<8 && boxes[box->row-1][box->column]->piece == nullptr)
+            {
+                getBoxPosibility(box,box->row-1 , box->column,possibilities);
+                if(-1<box->row-2 && box->row-2<8 && boxes[box->row-2][box->column]->piece==nullptr && box->piece->move==1)
+                    getBoxPosibility(box,box->row-2 , box->column,possibilities);
+            }
+            //Ataque normal
+            if(-1<box->row-1&&box->row-1<8)
+            {
+                if(-1<box->column-1&&box->column-1<8)
+                {
+                    Box * diagLeft = this->boxes[box->row-1][box->column-1];
+                    if(diagLeft->piece != nullptr)
+                    {
+                        getBoxPosibility(box,box->row-1 , box->column-1, possibilities);
+                    }
+                }
+                if(-1<box->column+1&&box->column+1<8)
+                {
+                    Box * diagRight = this->boxes[box->row-1][box->column+1];
+                    if(diagRight->piece != nullptr)
+                    {
+                        getBoxPosibility(box,box->row-1 , box->column+1, possibilities);
+                    }
+                }
+            }
+            //Captura al paso
+            if(box->row == 3 && box->piece->move == 3)
+            {
+                //Izquierda
+                if(-1<box->column-1 && box->column-1<8)
+                {
+                    Box * leftBox = this->boxes[box->row][box->column-1];
+                    if(leftBox->piece != nullptr && leftBox->piece->getPiece().compare("pawn") == 0)
+                    {
+                        Pawn * leftPawn = static_cast<Pawn*>(leftBox->piece);
+                        std::cout<<"Peon: Izquierdo "<<leftPawn->getPiece()<<std::endl;
+                        if(leftPawn->vulnerableCapturaPaso)
+                        {
+                            std::cout<<"Peon izquierdo vulnerable a captura"<<std::endl;
+                            getBoxPosibility(box , box->row-1 , box->column-1 , possibilities);
+                            this->boxes[box->row-1][box->column-1]->markDangerBox();
+                        }
+                    }
+                }
+                //Derecha
+                if(-1<box->column+1&&box->column+1<8)
+                {
+                    Box * rightBox = this->boxes[box->row][box->column+1];
+                    if(rightBox->piece != nullptr && rightBox->piece->getPiece().compare("pawn") == 0)
+                    {
+                        Pawn * rightPawn = static_cast<Pawn*>(rightBox->piece);
+                        std::cout<<"Peon: Derecho "<<rightPawn->getPiece()<<std::endl;
+                        if(rightPawn->vulnerableCapturaPaso)
+                        {
+                            std::cout<<"Peon derecho vulnerable a captura"<<std::endl;
+                            getBoxPosibility(box , box->row-1 , box->column+1 , possibilities);
+                            this->boxes[box->row-1][box->column+1]->markDangerBox();
+                        }
+                    }
+                }
+            }
+        }
     }
-    else
+    if(box->piece->getPiece().compare("horse")==0)
     {
-        if(box->piece==boxSelected->piece){
-            getBoxPosibility(box,box->row-1 , box->column,possibilities);
-        }
-
-      //Ataque del peon
-      Box * diagLeft = this->boxes[box->row-1][box->column-1];
-      if(diagLeft->piece != nullptr||box->piece!=boxSelected->piece)
-          getBoxPosibility(box,box->row-1 , box->column-1,possibilities);
-
-      Box * diagRight = this->boxes[box->row-1][box->column+1];
-      if(diagRight->piece != nullptr||box->piece!=boxSelected->piece)
-         getBoxPosibility(box,box->row-1 , box->column+1,possibilities);
-
-      //Captura al paso
-     /* if(box->row == 3)//Fila nro 5 desde abajo
-      {
-          Box * right = this->boxes[box->row][box->column+1];
-          if(right->piece != nullptr && right->piece->getPiece().compare("pawn")==0 && right->piece->getColor().compare("white")==0)
-          {
-              Pawn * peon = static_cast<Pawn*>(right->piece);
-              if(peon->vulnerableCapturaPaso)
-               getBoxPosibility(box->row-1 , box->column+1 ,possibilities, true);
-          }
-          Box * left = this->boxes[box->row][box->column-1];
-          if(left->piece !=  nullptr && left->piece->getPiece().compare("pawn")==0 && right->piece->getColor().compare("white")==0)
-          {
-              Pawn * peon = static_cast<Pawn*>(left->piece);
-              if(peon->vulnerableCapturaPaso)
-                getBoxPosibility(box->row-1 , box->column-1 ,possibilities, true);
-          }
-      }*/
-      if(box->piece->move == 1&&box->piece==boxSelected->piece)
-      {
-       getBoxPosibility(box,box->row-2 , box->column,possibilities);
-
-      }
-    }
-  }
-   if(box->piece->getPiece().compare("horse")==0)
-   {
          getBoxPosibility(box,box->row+2 , box->column+1,possibilities);
          getBoxPosibility(box,box->row+2 , box->column-1,possibilities);
          getBoxPosibility(box,box->row-2 , box->column+1,possibilities);
@@ -513,6 +565,7 @@ void Board::moveBox(Box * otherBox)
     {
        //Actualizamos el numero de movimientos
         boxSelected->piece->move++;
+        verificarCapturaPeon(this->boxSelected , otherBox);
         //Actualizamos la posicion de las ficha a la casilla movida
         boxSelected->piece->row=otherBox->row;
         boxSelected->piece->column=otherBox->column;
@@ -539,10 +592,16 @@ void Board::moveBox(Box * otherBox)
 
         this->boxSelected->piece = nullptr;
         //Marcamos como vulnerable por "captura por paso" al peon que haga su primera jugada con dos saltos
-        if(otherBox->piece->getPiece().compare("pawn") && otherBox->piece->move==1 && (otherBox->row==3 || otherBox->row==4))
+        if(otherBox->piece->getPiece().compare("pawn")==0)
         {
             Pawn * peon = static_cast<Pawn*>(otherBox->piece);
-            peon->vulnerableCapturaPaso = true;
+            if(otherBox->piece->move==2 && (otherBox->row==3 || otherBox->row==4))
+            {
+                peon->vulnerableCapturaPaso = true;
+                std::cout<<"Vulnerable a la captura al paso"<<std::endl;
+            }
+            else
+                peon->vulnerableCapturaPaso = false;
         }
     }
     this->boxSelected = nullptr;
@@ -897,4 +956,33 @@ void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
 
 }
 
+void Board::verificarCapturaPeon(Box* box, Box* otherBox)
+{
+  //Si ambos son piezas "peones"
+  if(box->piece->getPiece().compare("pawn")==0 && otherBox->piece == nullptr)
+  {
+    Box * posiblePeon = this->boxes[box->row][otherBox->column];
+    //Para las piezas blancas
+    if(posiblePeon->piece != nullptr && posiblePeon->piece->getPiece().compare("pawn")==0 && box->column!=otherBox->column)
+    {
+        if(box->row == 4 && otherBox->row == 5)
+        {
+            std::cout<<"Hay captura de pieza"<<std::endl;
+            this->boxes[box->row][otherBox->column]->piece = nullptr;
+            this->boxes[box->row][otherBox->column]->setIcon(QIcon());
+        }
+        //Para las piezas negras
+        else if(box->row == 3 && otherBox->row == 2)
+        {
+            std::cout<<"Hay captura pieza"<<std::endl;
+            this->boxes[box->row][otherBox->column]->piece = nullptr;
+            this->boxes[box->row][otherBox->column]->setIcon(QIcon());
+        }
+        else
+        {
+            std::cout<<"No hay captura al paso"<<std::endl;
+        }
+    }
+  }
+}
 
