@@ -317,14 +317,14 @@ std::vector<Box*> Board::getPosibilities(Box* box)
    }
     if(box->piece->getPiece().compare("king")==0)
    {
-      comprobeMoveKing(box->row , box->column+1,possibilities);
-       comprobeMoveKing(box->row , box->column-1,possibilities);
-      comprobeMoveKing(box->row+1 , box->column,possibilities);
-       comprobeMoveKing(box->row-1 , box->column,possibilities);
-       comprobeMoveKing(box->row+1 , box->column+1,possibilities);
-      comprobeMoveKing(box->row+1 , box->column-1,possibilities);
-      comprobeMoveKing(box->row-1 , box->column+1,possibilities);
-       comprobeMoveKing(box->row-1 , box->column-1,possibilities);
+      comprobeMoveKing(box,box->row , box->column+1,possibilities);
+       comprobeMoveKing(box,box->row , box->column-1,possibilities);
+      comprobeMoveKing(box,box->row+1 , box->column,possibilities);
+       comprobeMoveKing(box,box->row-1 , box->column,possibilities);
+       comprobeMoveKing(box,box->row+1 , box->column+1,possibilities);
+      comprobeMoveKing(box,box->row+1 , box->column-1,possibilities);
+      comprobeMoveKing(box,box->row-1 , box->column+1,possibilities);
+       comprobeMoveKing(box,box->row-1 , box->column-1,possibilities);
        /*
        //Posiblidad de enroque
        if(box->column>3&&box->column<6){
@@ -673,6 +673,145 @@ void Board::showPossibilities(std::vector<Box*> possibilities)
 }
 void Board::jaqueVerification(std::vector<Box*> possibilities)
 {
+<<<<<<< Updated upstream
+=======
+    if(attacker->piece->getPiece().compare("pawn")==0||attacker->piece->getPiece().compare("horse")==0)
+    {
+       DeathRoad.push_back(attacker);
+    }
+    if(attacker->piece->getPiece().compare("queen")==0||attacker->piece->getPiece().compare("tower")==0)
+    {
+        if(attacker->row==king->row)
+        {
+           if(attacker->column<king->column)
+           {
+               for(int i=attacker->column;i<king->column;i++)
+               {
+                   DeathRoad.push_back(boxes[attacker->row][i]);
+               }
+           }
+           else
+           {
+               for(int i=king->column+1;i<attacker->column+1;i++)
+               {
+                   DeathRoad.push_back(boxes[attacker->row][i]);
+               }
+           }
+
+        }
+        else if(attacker->column==king->column)
+        {
+            if(attacker->row<king->row)
+            {
+                for(int i=attacker->row;i<king->row;i++)
+                {
+                    DeathRoad.push_back(boxes[i][attacker->column]);
+                }
+            }
+            else
+            {
+                for(int i=king->row+1;i<attacker->row+1;i++)
+                {
+                     DeathRoad.push_back(boxes[i][attacker->column]);
+                }
+            }
+        }
+    }
+     if(attacker->piece->getPiece().compare("queen")==0||attacker->piece->getPiece().compare("bishop")==0)
+     {
+         if(attacker->row<king->row)
+        {
+          if(attacker->column<king->column)
+          {
+              int i=attacker->row;
+              int j=attacker->column;
+              while(i!=king->row)
+              {
+                  DeathRoad.push_back(boxes[i][j]);
+                  i++;
+                  j++;
+              }
+          }
+          else
+          {
+              int i=attacker->row;
+              int j=attacker->column;
+              while(i!=king->row)
+              {
+                  DeathRoad.push_back(boxes[i][j]);
+                  i++;
+                  j--;
+              }
+          }
+       }
+       else
+       {
+             if(attacker->column<king->column)
+             {
+                 int i=attacker->row;
+                 int j=attacker->column;
+                 while(i!=king->row)
+                 {
+                     DeathRoad.push_back(boxes[i][j]);
+                     i--;
+                     j++;
+                 }
+             }
+             else
+             {
+                 int i=attacker->row;
+                 int j=attacker->column;
+                 while(i!=king->row)
+                 {
+                     DeathRoad.push_back(boxes[i][j]);
+                     i--;
+                     j--;
+                 }
+             }
+
+       }
+
+     }
+}
+bool Board::comprobeJaqueMate(Box* king)
+{
+    std::cout<<"---------Comrpobacion de jaque mate---------"<<std::endl;
+
+    if(turn==0)
+    {
+        std::vector<Box*> l=getPosibilities(king);
+        std::cout<<king->piece->getPiece()<<" Posi:"<<l.size()<<std::endl;
+
+        for(size_t i=0;i<blackPieces.size();i++)
+        {
+            std::vector<Box*> tmp=getPosibilities(boxes[blackPieces[i]->row][blackPieces[i]->column]);
+            std::vector<Box*> tmq=outJaquePossibilities( boxes[blackPieces[i]->row][blackPieces[i]->column],tmp);
+            if(tmq.size()!=0)
+            {
+                return false;
+            }
+
+        }
+    }
+    else
+    {
+        for(size_t i=0;i<whitePieces.size();i++)
+        {
+            std::vector<Box*> tmp=getPosibilities(boxes[blackPieces[i]->row][blackPieces[i]->column]);
+            std::vector<Box*> tmq=outJaquePossibilities( boxes[blackPieces[i]->row][blackPieces[i]->column],tmp);
+            if(tmq.size()!=0)
+            {
+                return false;
+            }
+
+        }
+    }
+    return true;
+}
+void Board::jaqueVerification(Box* attacker)
+{
+    std::vector<Box*> possibilities=getPosibilities(attacker);
+>>>>>>> Stashed changes
     for(std::size_t i=0;i<possibilities.size();i++)
     {
         if(possibilities[i]->piece!=nullptr)
@@ -680,6 +819,16 @@ void Board::jaqueVerification(std::vector<Box*> possibilities)
            if(possibilities[i]->piece->getPiece().compare("king")==0)
            {
                jaque=true;
+<<<<<<< Updated upstream
+=======
+               std::cout<<"-------------Camino de la muerte------------"<<std::endl;
+               for(size_t i=0;i<DeathRoad.size();i++)
+               {
+                   std::cout<<DeathRoad[i]->row<<","<<DeathRoad[i]->column<<std::endl;
+               }
+                std::cout<<"------------------------------------------"<<std::endl;
+                comprobeJaqueMate(possibilities[i]);
+>>>>>>> Stashed changes
                QMessageBox msgBox;
                std::string msg;
                if(turn==0)
@@ -727,10 +876,15 @@ void Board::removePiece(Piece *piece)
 
     }
 }
-void Board::comprobeMoveKing(int row, int col,std::vector<Box*> &possibilities)
+void Board::comprobeMoveKing(Box* box,int row, int col,std::vector<Box*> &possibilities)
 {
+<<<<<<< Updated upstream
 
     if(turn==0)
+=======
+  std::cout<<"............................"<<std::endl;
+    if(box->piece->getColor().compare("white")==0)
+>>>>>>> Stashed changes
     {
         for(size_t i=0;i<blackPieces.size();i++)
         {
