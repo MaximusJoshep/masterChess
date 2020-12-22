@@ -304,7 +304,7 @@ std::vector<Box*> Board::getPosibilities(Box* box)
         }
     }
     if(box->piece->getPiece().compare("horse")==0)
-   {
+    {
          getBoxPosibility(box,box->row+2 , box->column+1,possibilities);
          getBoxPosibility(box,box->row+2 , box->column-1,possibilities);
          getBoxPosibility(box,box->row-2 , box->column+1,possibilities);
@@ -479,7 +479,7 @@ void Board::selectBox(Box * box)
       //std::string pieza = box->piece->getPiece();
       if(jaque)
       {
-
+         showPossibilities(outJaquePossibilities(boxSelected,tmp));
       }
       else
       {
@@ -673,22 +673,152 @@ void Board::showPossibilities(std::vector<Box*> possibilities)
 }
 void Board::jaqueVerification(std::vector<Box*> possibilities)
 {
+    if(attacker->piece->getPiece().compare("pawn")==0||attacker->piece->getPiece().compare("horse")==0)
+    {
+       DeathRoad.push_back(attacker);
+    }
+    if(attacker->piece->getPiece().compare("queen")==0||attacker->piece->getPiece().compare("tower")==0)
+    {
+        if(attacker->row==king->row)
+        {
+           if(attacker->column<king->column)
+           {
+               for(int i=attacker->column;i<king->column;i++)
+               {
+                   DeathRoad.push_back(boxes[attacker->row][i]);
+               }
+           }
+           else
+           {
+               for(int i=king->column+1;i<attacker->column+1;i++)
+               {
+                   DeathRoad.push_back(boxes[attacker->row][i]);
+               }
+           }
+
+        }
+        else if(attacker->column==king->column)
+        {
+            if(attacker->row<king->row)
+            {
+                for(int i=attacker->row;i<king->row;i++)
+                {
+                    DeathRoad.push_back(boxes[i][attacker->column]);
+                }
+            }
+            else
+            {
+                for(int i=king->row+1;i<attacker->row+1;i++)
+                {
+                     DeathRoad.push_back(boxes[i][attacker->column]);
+                }
+            }
+        }
+    }
+     if(attacker->piece->getPiece().compare("queen")==0||attacker->piece->getPiece().compare("bishop")==0)
+     {
+         if(attacker->row<king->row)
+        {
+          if(attacker->column<king->column)
+          {
+              int i=attacker->row;
+              int j=attacker->column;
+              while(i!=king->row)
+              {
+                  DeathRoad.push_back(boxes[i][j]);
+                  i++;
+                  j++;
+              }
+          }
+          else
+          {
+              int i=attacker->row;
+              int j=attacker->column;
+              while(i!=king->row)
+              {
+                  DeathRoad.push_back(boxes[i][j]);
+                  i++;
+                  j--;
+              }
+          }
+       }
+       else
+       {
+             if(attacker->column<king->column)
+             {
+                 int i=attacker->row;
+                 int j=attacker->column;
+                 while(i!=king->row)
+                 {
+                     DeathRoad.push_back(boxes[i][j]);
+                     i--;
+                     j++;
+                 }
+             }
+             else
+             {
+                 int i=attacker->row;
+                 int j=attacker->column;
+                 while(i!=king->row)
+                 {
+                     DeathRoad.push_back(boxes[i][j]);
+                     i--;
+                     j--;
+                 }
+             }
+
+       }
+
+     }
+}
+bool Board::comprobeJaqueMate()
+{
+    std::cout<<"---------Comrpobacion de jaque mate---------"<<std::endl;
+    if(turn==0)
+    {
+        for(size_t i=0;i<blackPieces.size();i++)
+        {
+            std::vector<Box*> tmp=getPosibilities(boxes[blackPieces[i]->row][blackPieces[i]->column]);
+            std::cout<<blackPieces[i]->getPiece()<<" Posibilities:"<<tmp.size()<<std::endl;
+        }
+    }
+    else
+    {
+        for(size_t i=0;i<whitePieces.size();i++)
+        {
+            std::vector<Box*> tmp=getPosibilities(boxes[whitePieces[i]->row][whitePieces[i]->column]);
+            std::cout<<whitePieces[i]->getPiece()<<" Posibilities:"<<tmp.size()<<std::endl;
+        }
+    }
+    return true;
+}
+void Board::jaqueVerification(Box* attacker)
+{
+    std::vector<Box*> possibilities=getPosibilities(attacker);
     for(std::size_t i=0;i<possibilities.size();i++)
     {
         if(possibilities[i]->piece!=nullptr)
         {
            if(possibilities[i]->piece->getPiece().compare("king")==0)
            {
+               generateDeathRoad(attacker,possibilities[i]);
                jaque=true;
+               std::cout<<"-------------Camino de la muerte------------"<<std::endl;
+               for(size_t i=0;i<DeathRoad.size();i++)
+               {
+                   std::cout<<DeathRoad[i]->row<<","<<DeathRoad[i]->column<<std::endl;
+               }
+                std::cout<<"------------------------------------------"<<std::endl;
+                comprobeJaqueMate();
                QMessageBox msgBox;
                std::string msg;
                if(turn==0)
                {
-                    msgBox.setText("Jaque a las blancas");
+                    msgBox.setText("Jaque a las negras");
                }
                else
                {
-                   msgBox.setText("Jaque a las negras");
+                   msgBox.setText("Jaque a las blancas");
                }
 
 
@@ -700,6 +830,36 @@ void Board::jaqueVerification(std::vector<Box*> possibilities)
     }
 
 }
+std::vector<Box*> Board::outJaquePossibilities(Box* box,std::vector<Box*>  &possibilities)
+{
+    std::vector<Box*> tmp;
+    for(size_t i=0;i<DeathRoad.size();i++)
+    {
+        for(size_t j=0;j<possibilities.size();j++)
+        {
+            if(box->piece->getPiece().compare("king")==0)
+            {
+                if(DeathRoad[i]!=possibilities[j])
+                {
+                    tmp.push_back(possibilities[j]);
+                }
+                if(DeathRoad.size()==1)
+                {
+                    tmp.push_back(DeathRoad[0]);
+                }
+            }
+            else
+            {
+                if(DeathRoad[i]==possibilities[j])
+                {
+                    tmp.push_back(possibilities[j]);
+                }
+            }
+        }
+    }
+    return tmp;
+}
+
 void Board::removePiece(Piece *piece)
 {
     if(turn==0)
