@@ -67,3 +67,4 @@ void Box::markBox()
       this->setStyleSheet("background-color: #A82AF3;" "width: 80px;" "height:80px");
       this->show();
   }
+

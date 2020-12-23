@@ -48,7 +48,7 @@ public:
 private:
     Ui::Board *ui;
     Box * boxes[8][8];
-    int turn=1;
+    int turn=0;
     Box * boxSelected = nullptr;
 
     std::vector<Box*> DeathRoad;

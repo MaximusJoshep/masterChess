@@ -111,9 +111,10 @@ void Board::draw_boxes()
      {
          for(int j=0;j<8;j++)
          {
-             if(j!=4){
-                   whitePieces.push_back(this->boxes[i][j]->piece);
+             if(j==4&&i==0){
+                  continue;
               }
+              whitePieces.push_back(this->boxes[i][j]->piece);
          }
      }
      //Llenamos el vector de las fichas negras
@@ -121,9 +122,10 @@ void Board::draw_boxes()
      {
          for(int j=0;j<8;j++)
          {
-             if(j!=4){
-                   blackPieces.push_back(this->boxes[i][j]->piece);
+             if(j==4&&i==7){
+                   continue;
               }
+             blackPieces.push_back(this->boxes[i][j]->piece);
          }
      }
 
@@ -147,6 +149,10 @@ void Board::getDangerPossibility(Box* box,int row , int col ,std::vector<Box*> &
 {
     if(this->boxes[row][col]->piece->color.compare(box->piece->color)==0){
        return;
+    }
+    if(box->piece->getPiece().compare("pawn")==0&&box->column==col)
+    {
+        return;
     }
     possibilities.push_back(boxes[row][col]);
 }
@@ -173,32 +179,28 @@ std::vector<Box*> Board::getPosibilities(Box* box)
         if(box->piece->getColor().compare("white")==0)
         {
             //Movimiento
-            if(-1<box->row+1 && box->row+1<8 && boxes[box->row+1][box->column]->piece == nullptr)
+
+            Box * diagLeft = this->boxes[box->row+1][box->column-1];
+            if(diagLeft->piece != nullptr)
             {
-                getBoxPosibility(box,box->row+1 , box->column,possibilities);
-                if(-1<box->row+2 && box->row+2<8 && boxes[box->row+2][box->column]->piece==nullptr && box->piece->move==1)
-                    getBoxPosibility(box,box->row+2 , box->column,possibilities);
+                getBoxPosibility(box,box->row+1 , box->column-1, possibilities);
             }
+            Box * diagRight = this->boxes[box->row+1][box->column+1];
+            if(diagRight->piece != nullptr)
+            {
+                getBoxPosibility(box,box->row+1 , box->column+1, possibilities);
+            }
+
             //Ataque normal
-            if(-1<box->row+1&&box->row+1<8)
-            {
-                if(-1<box->column-1&&box->column-1<8)
-                {
-                    Box * diagLeft = this->boxes[box->row+1][box->column-1];
-                    if(diagLeft->piece != nullptr)
-                    {
-                        getBoxPosibility(box,box->row+1 , box->column-1, possibilities);
-                    }
-                }
-                if(-1<box->column+1&&box->column+1<8)
-                {
-                    Box * diagRight = this->boxes[box->row+1][box->column+1];
-                    if(diagRight->piece != nullptr)
-                    {
-                        getBoxPosibility(box,box->row+1 , box->column+1, possibilities);
-                    }
-                }
-            }
+
+             if(turn==0)
+              {
+                 getBoxPosibility(box,box->row+1 , box->column,possibilities);
+                  if(box->piece->move==1)
+                  getBoxPosibility(box,box->row+2 , box->column,possibilities);
+
+               }
+
             //Captura al paso
             if(box->row == 4 && box->piece->move == 3)
             {
@@ -238,33 +240,24 @@ std::vector<Box*> Board::getPosibilities(Box* box)
         }
         else
         {
+            Box * diagLeft = this->boxes[box->row-1][box->column-1];
+            if(diagLeft->piece != nullptr)
+            {
+                getBoxPosibility(box,box->row-1 , box->column-1, possibilities);
+            }
+            Box * diagRight = this->boxes[box->row-1][box->column+1];
+            if(diagRight->piece != nullptr)
+            {
+                getBoxPosibility(box,box->row-1 , box->column+1, possibilities);
+            }
             //Movimiento
-            if(-1<box->row-1 && box->row-1<8 && boxes[box->row-1][box->column]->piece == nullptr)
+            if(turn==1)
             {
                 getBoxPosibility(box,box->row-1 , box->column,possibilities);
-                if(-1<box->row-2 && box->row-2<8 && boxes[box->row-2][box->column]->piece==nullptr && box->piece->move==1)
+                if(box->piece->move==1)
                     getBoxPosibility(box,box->row-2 , box->column,possibilities);
             }
-            //Ataque normal
-            if(-1<box->row-1&&box->row-1<8)
-            {
-                if(-1<box->column-1&&box->column-1<8)
-                {
-                    Box * diagLeft = this->boxes[box->row-1][box->column-1];
-                    if(diagLeft->piece != nullptr)
-                    {
-                        getBoxPosibility(box,box->row-1 , box->column-1, possibilities);
-                    }
-                }
-                if(-1<box->column+1&&box->column+1<8)
-                {
-                    Box * diagRight = this->boxes[box->row-1][box->column+1];
-                    if(diagRight->piece != nullptr)
-                    {
-                        getBoxPosibility(box,box->row-1 , box->column+1, possibilities);
-                    }
-                }
-            }
+
             //Captura al paso
             if(box->row == 3 && box->piece->move == 3)
             {
@@ -477,18 +470,19 @@ void Board::selectBox(Box * box)
       this->boxSelected = box;
       //std::string pieza = box->piece->getPiece();
         std::vector<Box*> tmp=getPosibilities(boxSelected);
+        for(size_t i=0;i<tmp.size();i++)
+        {
+          std::cout<<tmp[i]->row<<","<<tmp[i]->column<<std::endl;
+        }
+        std::cout<<tmp.size()<<"----------------"<<std::endl;
       if(jaque)
       {
          showPossibilities(outJaquePossibilities(boxSelected,tmp));
       }
       else
       {
-          std::vector<Box*> tmp=getPosibilities(boxSelected);
-          for(size_t i=0;i<tmp.size();i++)
-          {
-            std::cout<<tmp[i]->row<<","<<tmp[i]->column<<std::endl;
-          }
-          std::cout<<tmp.size()<<"----------------"<<std::endl;
+
+
            showPossibilities(tmp);
       }
     }
@@ -558,10 +552,11 @@ void Board::moveBox(Box * otherBox)
         otherBox->setIconSize(QSize(50,50));
         //Verificamos si el lugar donde cayo ameza la pisicion del rey enemigo
         std::vector<Box*> tmp=getPosibilities(otherBox);
+
         jaqueVerification(otherBox);
         if(jaque)
         {
-            DeathRoad=tmp;
+            //jaque=false;
         }
 
 
@@ -874,12 +869,16 @@ std::vector<Box*> Board::outJaquePossibilities(Box* box,std::vector<Box*>  &poss
             }
             else
             {
-                if(DeathRoad[i]==possibilities[j])
+                if(DeathRoad[i]->row==possibilities[j]->row&&DeathRoad[i]->column==possibilities[j]->column)
                 {
                     tmp.push_back(possibilities[j]);
                 }
             }
         }
+    }
+    for(size_t i=0;i<tmp.size();i++)
+    {
+        std::cout<<tmp[i]->row<<"-"<<tmp[i]->column<<std::endl;
     }
     return tmp;
 }
